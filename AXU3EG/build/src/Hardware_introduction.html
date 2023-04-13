@@ -1,44 +1,294 @@
 
+
 <!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>《第二章》开发板硬件介绍 &mdash; ZYNQ MPSoC开发平台FPGA教程 1.0 文档</title>
+  
 
-    <title>《第二章》开发板硬件介绍 &#8212; ZYNQ MPSoC开发平台FPGA教程 1.0 文档</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/translations.js"></script>
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/translations.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
     <link rel="next" title="《第三章》Verilog 基础模块介绍" href="verilog_base.html" />
     <link rel="prev" title="《第一章》Ultrascale+ MPSoC 介绍" href="Ultrascale_MPSoC.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>导航</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="总索引"
-             accesskey="I">索引</a></li>
-        <li class="right" >
-          <a href="verilog_base.html" title="《第三章》Verilog 基础模块介绍"
-             accesskey="N">下一页</a> |</li>
-        <li class="right" >
-          <a href="Ultrascale_MPSoC.html" title="《第一章》Ultrascale+ MPSoC 介绍"
-             accesskey="P">上一页</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">《第二章》开发板硬件介绍</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ZYNQ MPSoC开发平台FPGA教程
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">公司简介</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about_alinx.html">关于ALINX</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">AXU3EG型号板卡教程</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">引文</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Ultrascale_MPSoC.html">《第一章》Ultrascale+ MPSoC 介绍</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">《第二章》开发板硬件介绍</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#acu3eg">2.1 ACU3EG核心板</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">2.1.1 简介</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zynq">2.1.2 ZYNQ芯片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ddr4-dram">2.1.3 DDR4 DRAM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#psddr4-sdram">PS端DDR4 SDRAM引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plddr4-sdram">PL端DDR4 SDRAM引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#qspi-flash">2.1.4 QSPI Flash</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">QSPI FLASH配置芯片引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#emmc-flash">2.1.5 eMMC Flash</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">eMMC FLASH配置芯片引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">2.1.6 时钟配置</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rtc">RTC时钟引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ps">PS时钟引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pl">PL时钟引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#led">2.1.7 LED灯</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">2.1.8 电源</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">2.1.9 结构图</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">2.1.10 连接器管脚定义</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#j29">J29连接器的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#j30">J30连接器的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#j31">J31连接器的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#j32">J32连接器的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">2.2扩展板</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">2.2.1 简介</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#m-2">2.2.2 M.2接口</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#m-2zynq">M.2接口ZYNQ引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dp">2.2.3 DP显示接口</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#displayportzynq">DisplayPort接口ZYNQ引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#usb3-0">2.2.4 USB3.0接口</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#usb">USB接口引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id11">2.2.5千兆以太网接口</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">千兆以太网引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#usb-uart">2.2.6USB Uart接口</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#usbzynq">USB转串口的ZYNQ引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sd">2.2.7 SD卡槽</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id13">SD卡槽引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id14">2.2.8 40针扩展口</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#j45zynq">J45扩展口ZYNQ的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#j46zynq">J46扩展口ZYNQ的引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#can">2.2.9 CAN通信接口</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id15">CAN通信引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id16">2.2.10 485通信接口</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rs485">RS485通信引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mipi">2.2.11 MIPI接口</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id17">MIPI接口引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#jtag">2.2.12JTAG调试口</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">2.2.13RTC实时时</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eeprom">2.2.14 EEPROM和温度传感器</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id19">EEPROM通信引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id20">2.2.15 LED灯</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id21">用户LED灯的引脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id22">2.2.16 按键</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id23">按键的ZYNQ管脚分配</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id24">2.2.17 拨码开关配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id25">2.2.18 电源</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id26">各个电源分配的功能</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id27">2.2.19 风扇</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id28">2.2.20 结构尺寸图</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="verilog_base.html">《第三章》Verilog 基础模块介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pl_led.html">《第四章》PL的“Hello world”LED 实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pll.html">《第五章》Vivado 下 PLL 实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ram.html">《第六章》FPGA 片内 RAM 测试实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rom.html">《第七章》FPGA 片内 ROM 测试实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fifo.html">《第八章》FPGA 片内 FIFO 读写测试实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="key.html">《第九章》Vivado 下按键实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pwm.html">《第十章》PWM 呼吸灯实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uart.html">《第十一章》UART 实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rs485.html">《第十二章》RS485 实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pl_ddr4.html">《第十三章》PL 端 DDR4 读写测试实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hdmi_out.html">《第十四章》HDMI 输出实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hdmi_char.html">《第十五章》HDMI 字符显示实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7lcd.html">《第十六章》7 寸液晶屏显示实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ad7606.html">《第十七章》AD7606 多通道波形显示实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ad9238_d.html">《第十八章》AD9238 双通道波形显示实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adda.html">《第十九章》ADDA 测试实验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ad9767_d.html">《第二十章》AD9767 双通道正弦波产生实验</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">AXU3EG常见问题</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="problem.html">PROBLEM</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Alinx版权</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="IP.html">版权说明</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ZYNQ MPSoC开发平台FPGA教程</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>《第二章》开发板硬件介绍</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/src/Hardware_introduction.rst.txt" rel="nofollow"> 查看页面源码</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <img alt="../_images/88.png" src="../_images/88.png" />
 <section id="id1">
@@ -144,10 +394,10 @@
 </div></blockquote>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 27%" />
-<col style="width: 27%" />
-<col style="width: 27%" />
-<col style="width: 18%" />
+<col style="width: 27.3%" />
+<col style="width: 27.3%" />
+<col style="width: 27.3%" />
+<col style="width: 18.2%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>位号</p></th>
@@ -178,9 +428,9 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>PS端DDR4 SDRAM引脚分配<a class="headerlink" href="#psddr4-sdram" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 38%" />
-<col style="width: 38%" />
-<col style="width: 25%" />
+<col style="width: 37.5%" />
+<col style="width: 37.5%" />
+<col style="width: 25.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -664,9 +914,9 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>PL端DDR4 SDRAM引脚分配<a class="headerlink" href="#plddr4-sdram" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 38%" />
-<col style="width: 38%" />
-<col style="width: 25%" />
+<col style="width: 37.5%" />
+<col style="width: 37.5%" />
+<col style="width: 25.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -880,10 +1130,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 </div></blockquote>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 27%" />
-<col style="width: 27%" />
-<col style="width: 27%" />
-<col style="width: 18%" />
+<col style="width: 27.3%" />
+<col style="width: 27.3%" />
+<col style="width: 27.3%" />
+<col style="width: 18.2%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>位号</p></th>
@@ -910,9 +1160,9 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>QSPI FLASH配置芯片引脚分配<a class="headerlink" href="#id3" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 43%" />
-<col style="width: 43%" />
-<col style="width: 14%" />
+<col style="width: 42.9%" />
+<col style="width: 42.9%" />
+<col style="width: 14.3%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -954,10 +1204,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 </div></blockquote>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 27%" />
-<col style="width: 27%" />
-<col style="width: 27%" />
-<col style="width: 18%" />
+<col style="width: 27.3%" />
+<col style="width: 27.3%" />
+<col style="width: 27.3%" />
+<col style="width: 18.2%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>位号</p></th>
@@ -984,9 +1234,9 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>eMMC FLASH配置芯片引脚分配<a class="headerlink" href="#id4" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 43%" />
-<col style="width: 43%" />
-<col style="width: 14%" />
+<col style="width: 42.9%" />
+<col style="width: 42.9%" />
+<col style="width: 14.3%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -1056,8 +1306,8 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>RTC时钟引脚分配<a class="headerlink" href="#rtc" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -1082,8 +1332,8 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>PS时钟引脚分配<a class="headerlink" href="#ps" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -1105,8 +1355,8 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>PL时钟引脚分配<a class="headerlink" href="#pl" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -1149,12 +1399,12 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>J29连接器的引脚分配<a class="headerlink" href="#j29" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>J29管脚</p></th>
@@ -1593,12 +1843,12 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>J30连接器的引脚分配<a class="headerlink" href="#j30" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>J30管脚</p></th>
@@ -2037,12 +2287,12 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>J31连接器的引脚分配<a class="headerlink" href="#j31" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>J31管脚</p></th>
@@ -2481,12 +2731,12 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>J32连接器的引脚分配<a class="headerlink" href="#j32" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>J32管脚</p></th>
@@ -2958,10 +3208,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>M.2接口ZYNQ引脚分配<a class="headerlink" href="#m-2zynq" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -3020,10 +3270,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>DisplayPort接口ZYNQ引脚分配<a class="headerlink" href="#displayportzynq" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -3097,10 +3347,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>USB接口引脚分配<a class="headerlink" href="#usb" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -3203,9 +3453,9 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <p>KSZ9031RNX上电会检测一些特定的IO的电平状态,从而确定自己的工作模式。表3-5-1 描述了GPHY芯片上电之后的默认设定信息。</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>配置Pin脚</p></th>
@@ -3244,10 +3494,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>千兆以太网引脚分配<a class="headerlink" href="#id12" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -3415,10 +3665,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>USB转串口的ZYNQ引脚分配<a class="headerlink" href="#usbzynq" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -3463,10 +3713,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>SD卡槽引脚分配<a class="headerlink" href="#id13" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -3522,12 +3772,12 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>J45扩展口ZYNQ的引脚分配<a class="headerlink" href="#j45zynq" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>J45管脚</p></th>
@@ -3686,12 +3936,12 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>J46扩展口ZYNQ的引脚分配<a class="headerlink" href="#j46zynq" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>J46管脚</p></th>
@@ -3857,10 +4107,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>CAN通信引脚分配<a class="headerlink" href="#id15" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -3904,10 +4154,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>RS485通信引脚分配<a class="headerlink" href="#rs485" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -3960,10 +4210,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>MIPI接口引脚分配<a class="headerlink" href="#id17" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -4048,10 +4298,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>EEPROM通信引脚分配<a class="headerlink" href="#id19" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -4084,10 +4334,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>用户LED灯的引脚分配<a class="headerlink" href="#id21" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -4120,10 +4370,10 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>按键的ZYNQ管脚分配<a class="headerlink" href="#id23" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 10%" />
-<col style="width: 30%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>信号名称</p></th>
@@ -4162,8 +4412,8 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 <h2>各个电源分配的功能<a class="headerlink" href="#id26" title="此标题的永久链接">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>电源</p></th>
@@ -4203,169 +4453,51 @@ DDR4的硬件设计需要严格考虑信号完整性,我们在电路设计和PCB
 </section>
 
 
-            <div class="clearer"></div>
+           </div>
+           
           </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="verilog_base.html" class="btn btn-neutral float-right" title="《第三章》Verilog 基础模块介绍" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Ultrascale_MPSoC.html" class="btn btn-neutral float-left" title="《第一章》Ultrascale+ MPSoC 介绍" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; 版权所有 2023, ALINX       http://www.alinx.com.
+
+    </p>
+  </div>
+    
+    
+    
+    利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发. 
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../index.html">目录</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">《第二章》开发板硬件介绍</a><ul>
-<li><a class="reference internal" href="#acu3eg">2.1 ACU3EG核心板</a><ul>
-<li><a class="reference internal" href="#id2">2.1.1 简介</a></li>
-<li><a class="reference internal" href="#zynq">2.1.2 ZYNQ芯片</a></li>
-<li><a class="reference internal" href="#ddr4-dram">2.1.3 DDR4 DRAM</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#psddr4-sdram">PS端DDR4 SDRAM引脚分配</a></li>
-<li><a class="reference internal" href="#plddr4-sdram">PL端DDR4 SDRAM引脚分配</a><ul>
-<li><a class="reference internal" href="#qspi-flash">2.1.4 QSPI Flash</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id3">QSPI FLASH配置芯片引脚分配</a><ul>
-<li><a class="reference internal" href="#emmc-flash">2.1.5 eMMC Flash</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id4">eMMC FLASH配置芯片引脚分配</a><ul>
-<li><a class="reference internal" href="#id5">2.1.6 时钟配置</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#rtc">RTC时钟引脚分配</a></li>
-<li><a class="reference internal" href="#ps">PS时钟引脚分配</a></li>
-<li><a class="reference internal" href="#pl">PL时钟引脚分配</a><ul>
-<li><a class="reference internal" href="#led">2.1.7 LED灯</a></li>
-<li><a class="reference internal" href="#id6">2.1.8 电源</a></li>
-<li><a class="reference internal" href="#id7">2.1.9 结构图</a></li>
-<li><a class="reference internal" href="#id8">2.1.10 连接器管脚定义</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#j29">J29连接器的引脚分配</a></li>
-<li><a class="reference internal" href="#j30">J30连接器的引脚分配</a></li>
-<li><a class="reference internal" href="#j31">J31连接器的引脚分配</a></li>
-<li><a class="reference internal" href="#j32">J32连接器的引脚分配</a></li>
-<li><a class="reference internal" href="#id9">2.2扩展板</a><ul>
-<li><a class="reference internal" href="#id10">2.2.1 简介</a></li>
-<li><a class="reference internal" href="#m-2">2.2.2 M.2接口</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#m-2zynq">M.2接口ZYNQ引脚分配</a><ul>
-<li><a class="reference internal" href="#dp">2.2.3 DP显示接口</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#displayportzynq">DisplayPort接口ZYNQ引脚分配</a><ul>
-<li><a class="reference internal" href="#usb3-0">2.2.4 USB3.0接口</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#usb">USB接口引脚分配</a><ul>
-<li><a class="reference internal" href="#id11">2.2.5千兆以太网接口</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id12">千兆以太网引脚分配</a><ul>
-<li><a class="reference internal" href="#usb-uart">2.2.6USB Uart接口</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#usbzynq">USB转串口的ZYNQ引脚分配</a><ul>
-<li><a class="reference internal" href="#sd">2.2.7 SD卡槽</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id13">SD卡槽引脚分配</a><ul>
-<li><a class="reference internal" href="#id14">2.2.8 40针扩展口</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#j45zynq">J45扩展口ZYNQ的引脚分配</a></li>
-<li><a class="reference internal" href="#j46zynq">J46扩展口ZYNQ的引脚分配</a><ul>
-<li><a class="reference internal" href="#can">2.2.9 CAN通信接口</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id15">CAN通信引脚分配</a><ul>
-<li><a class="reference internal" href="#id16">2.2.10 485通信接口</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#rs485">RS485通信引脚分配</a><ul>
-<li><a class="reference internal" href="#mipi">2.2.11 MIPI接口</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id17">MIPI接口引脚分配</a><ul>
-<li><a class="reference internal" href="#jtag">2.2.12JTAG调试口</a></li>
-<li><a class="reference internal" href="#id18">2.2.13RTC实时时</a></li>
-<li><a class="reference internal" href="#eeprom">2.2.14 EEPROM和温度传感器</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id19">EEPROM通信引脚分配</a><ul>
-<li><a class="reference internal" href="#id20">2.2.15 LED灯</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id21">用户LED灯的引脚分配</a><ul>
-<li><a class="reference internal" href="#id22">2.2.16 按键</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id23">按键的ZYNQ管脚分配</a><ul>
-<li><a class="reference internal" href="#id24">2.2.17 拨码开关配置</a></li>
-<li><a class="reference internal" href="#id25">2.2.18 电源</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id26">各个电源分配的功能</a><ul>
-<li><a class="reference internal" href="#id27">2.2.19 风扇</a></li>
-<li><a class="reference internal" href="#id28">2.2.20 结构尺寸图</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+
+    </section>
 
   </div>
-  <div>
-    <h4>上一主题</h4>
-    <p class="topless"><a href="Ultrascale_MPSoC.html"
-                          title="上一章">《第一章》Ultrascale+ MPSoC 介绍</a></p>
-  </div>
-  <div>
-    <h4>下一主题</h4>
-    <p class="topless"><a href="verilog_base.html"
-                          title="下一章">《第三章》Verilog 基础模块介绍</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>本页</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/src/Hardware_introduction.rst.txt"
-            rel="nofollow">显示源代码</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">快速搜索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="提交" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>导航</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="总索引"
-             >索引</a></li>
-        <li class="right" >
-          <a href="verilog_base.html" title="《第三章》Verilog 基础模块介绍"
-             >下一页</a> |</li>
-        <li class="right" >
-          <a href="Ultrascale_MPSoC.html" title="《第一章》Ultrascale+ MPSoC 介绍"
-             >上一页</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">《第二章》开发板硬件介绍</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; 版权所有 2023, ALINX       http://www.alinx.com.
-      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3创建。
-    </div>
-  </body>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>
