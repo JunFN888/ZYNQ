@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>《第十五章》HDMI 字符显示实验 &#8212; ZYNQ MPSoC开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="《第十六章》7 寸液晶屏显示实验" href="7lcd.html" />
+    <link rel="prev" title="《第十四章》HDMI 输出实验" href="hdmi_out.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="7lcd.html" title="《第十六章》7 寸液晶屏显示实验"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="hdmi_out.html" title="《第十四章》HDMI 输出实验"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">《第十五章》HDMI 字符显示实验</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <img alt="../_images/88.png" src="../_images/88.png" />
+<section id="hdmi">
+<h1>《第十五章》HDMI 字符显示实验<a class="headerlink" href="#hdmi" title="此标题的永久链接">¶</a></h1>
+<p><strong>实验Vivado工程为“hdmi_char”。</strong></p>
+<p>在HDMI输出实验中讲解了HDMI显示原理和显示方式,本实验介绍如何使用FPGA实现字符显示,通过这个实验更加深入的了解HDMI的显示方式。</p>
+<section id="id1">
+<h2>15.1实验原理<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h2>
+<p>实验通过字符转换工具将字符转换为16进制coe文件存放到单端口的ROM IP 核中,再从ROM 中把转换后的数据读取出来显示到HDMI上。</p>
+</section>
+<section id="id2">
+<h2>15.2程序设计<a class="headerlink" href="#id2" title="此标题的永久链接">¶</a></h2>
+<p>字符显示例程是在HDMI显示的基础上增加了一个osd_display的模块,“osd_display”模块是用来读取存储在Rom ip核里转换后的字符信息,并在指定区域显示。程序框图如下图所示:</p>
+<img alt="../_images/image126.png" class="align-center" src="../_images/image126.png" />
+<ol class="arabic simple">
+<li><p>在“timing_gen_xy”模块是根据HDMI时序标准定义了“x_cnt”和“y_cnt”两个计数器并由这两个计数器产生了HDMI显示的“x”坐标和“y”坐标。程序中用“vs_edge”和“de_falling”分别表示场同步开始信号和数据有效结束信号。其原理如下图所示:</p></li>
+</ol>
+<img alt="../_images/image218.png" class="align-center" src="../_images/image218.png" />
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 17%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>信号名称</p></th>
+<th class="head"><p>方向</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>rst_n</p></td>
+<td><p>in</p></td>
+<td><p>异步复位输入,低复位</p></td>
+</tr>
+<tr class="row-odd"><td><p>clk</p></td>
+<td><p>in</p></td>
+<td><p>外部时钟输入</p></td>
+</tr>
+<tr class="row-even"><td><p>i_hs</p></td>
+<td><p>in</p></td>
+<td><p>行同步信号</p></td>
+</tr>
+<tr class="row-odd"><td><p>i_vs</p></td>
+<td><p>in</p></td>
+<td><p>场同步信号</p></td>
+</tr>
+<tr class="row-even"><td><p>i_de</p></td>
+<td><p>in</p></td>
+<td><p>数据有效信号</p></td>
+</tr>
+<tr class="row-odd"><td><p>i_data</p></td>
+<td><p>in</p></td>
+<td><p>color_bar数据</p></td>
+</tr>
+<tr class="row-even"><td><p>o_hs</p></td>
+<td><p>out</p></td>
+<td><p>输出行同步信号</p></td>
+</tr>
+<tr class="row-odd"><td><p>o_vs</p></td>
+<td><p>out</p></td>
+<td><p>输出场同步信号</p></td>
+</tr>
+<tr class="row-even"><td><p>o_de</p></td>
+<td><p>out</p></td>
+<td><p>输出数据有效信号</p></td>
+</tr>
+<tr class="row-odd"><td><p>o_data</p></td>
+<td><p>out</p></td>
+<td><p>输出数据</p></td>
+</tr>
+<tr class="row-even"><td><p>x</p></td>
+<td><p>out</p></td>
+<td><p>生成X坐标</p></td>
+</tr>
+<tr class="row-odd"><td><p>y</p></td>
+<td><p>out</p></td>
+<td><p>生成Y坐标</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>timing_gen_xy模块端口</strong></p>
+<p>2) 下面介绍如何存储文字信息的ROM IP,首先需要生成能够被XILINX FPGA识别的.coe文件。
+首先在工程文件夹下找到“FPGA字模提取”工具。</p>
+<img alt="../_images/image312.png" class="align-center" src="../_images/image312.png" />
+<p>双击.exe文件打开工具</p>
+<img alt="../_images/image48.png" class="align-center" src="../_images/image48.png" />
+<p>在提取工具的“字符输入”框中输入需要显示的字符,字体和字符高度可以自定义选择。设置完成后点击“转换”按钮,在界面左下角可以看到转换后的字符点阵大小,点阵的宽和高在程序中是需要用到</p>
+<img alt="../_images/image58.png" class="align-center" src="../_images/image58.png" />
+<p>点阵的宽和高这里位144x32,需要跟osd_display程序中定义的一致:</p>
+<img alt="../_images/image68.png" class="align-center" src="../_images/image68.png" />
+<p>点击“保存”按钮,将文件保存到本例程源文件目录下,需要注意的是在保存类型下应该选择Xilinx(.coe),点击“保存”按钮。</p>
+<img alt="../_images/image78.png" class="align-center" src="../_images/image78.png" />
+<p>找到生成的.coe文件打开后可以看到如下:</p>
+<img alt="../_images/image87.png" class="align-center" src="../_images/image87.png" />
+<p>调用单端口Rom IP核的过程在前面ROM的使用中已经介绍过,设置为Single Port ROM</p>
+<img alt="../_images/image97.png" class="align-center" src="../_images/image97.png" />
+<p>在PortA Options栏中设置如下:</p>
+<img alt="../_images/image107.png" class="align-center" src="../_images/image107.png" />
+<p>按如下图添加osd.coe文件(找到前面生成的coe文件),完成后点击“OK”按钮:</p>
+<img alt="../_images/image1112.png" class="align-center" src="../_images/image1112.png" />
+<ol class="arabic simple" start="3">
+<li><p>osd_display模块包含timing_gen_xy 模块和osd_rom模块。osd_rom里存储的字符数据,如果数据为1,OSD的区域显示ROM中的前景红色(显示ALINX芯驿),如果数据是0,OSD的区域显示数据为背景色(彩条)。</p></li>
+</ol>
+<img alt="../_images/image127.png" class="align-center" src="../_images/image127.png" />
+<p>设置区域有效信号,也就是字符显示在此区域中,起始坐标设置成(9,9),区域大小可以根据字符生成工具设置的区域设置。</p>
+<img alt="../_images/image136.png" class="align-center" src="../_images/image136.png" />
+<p>在ROM的读地址部分可能很多人不理解,为什么是[15:3],也就是八个时钟周期才读出一个数据,这是因为字符的一个点只表示1bit,而ROM的存储数据宽度是8位,因此需要八个周期取出一个数据,并比较每个bit位的值,将字符一个点转换成图像上的一个像素。</p>
+<img alt="../_images/image145.png" class="align-center" src="../_images/image145.png" />
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 17%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>信号名称</p></th>
+<th class="head"><p>方向</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>rst_n</p></td>
+<td><p>in</p></td>
+<td><p>异步复位输入,低复位</p></td>
+</tr>
+<tr class="row-odd"><td><p>pclk</p></td>
+<td><p>in</p></td>
+<td><p>外部时钟输入</p></td>
+</tr>
+<tr class="row-even"><td><p>i_hs</p></td>
+<td><p>in</p></td>
+<td><p>行同步信号</p></td>
+</tr>
+<tr class="row-odd"><td><p>i_vs</p></td>
+<td><p>in</p></td>
+<td><p>场同步信号</p></td>
+</tr>
+<tr class="row-even"><td><p>i_de</p></td>
+<td><p>in</p></td>
+<td><p>数据有效信号</p></td>
+</tr>
+<tr class="row-odd"><td><p>i_data</p></td>
+<td><p>in</p></td>
+<td><p>color_bar数据</p></td>
+</tr>
+<tr class="row-even"><td><p>o_hs</p></td>
+<td><p>out</p></td>
+<td><p>输出行同步信号</p></td>
+</tr>
+<tr class="row-odd"><td><p>o_vs</p></td>
+<td><p>out</p></td>
+<td><p>输出场同步信号</p></td>
+</tr>
+<tr class="row-even"><td><p>o_de</p></td>
+<td><p>out</p></td>
+<td><p>输出数据有效信号</p></td>
+</tr>
+<tr class="row-odd"><td><p>o_data</p></td>
+<td><p>out</p></td>
+<td><p>输出数据</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>osd_display模块端口</strong></p>
+</section>
+<section id="id3">
+<h2>15.3实验现象<a class="headerlink" href="#id3" title="此标题的永久链接">¶</a></h2>
+<p>连接好开发板和显示器,连接方式参考《HDMI输出实验》教程,需要注意,开发板的各个连接器不要带电热插拔,下载好实验程序,可以看到显示器显示以彩条为背景的字符。开发板作为HDMI输出设备,只能通过HDMI显示设备来显示,不要试图通过笔记本电脑的HDMI接口来显示,因为笔记本也是输出设备。</p>
+<img alt="../_images/image154.png" class="align-center" src="../_images/image154.png" />
+<p>默认字符显示的位置在坐标为(9,9),另外用户可以修改下面的pos_y和pos_x的判断条件将字符显示在显示屏的任意位置:</p>
+<img alt="../_images/image164.png" class="align-center" src="../_images/image164.png" />
+<img alt="../_images/888.png" src="../_images/888.png" />
+<p><em>ZYNQ MPSoC开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">《第十五章》HDMI 字符显示实验</a><ul>
+<li><a class="reference internal" href="#id1">15.1实验原理</a></li>
+<li><a class="reference internal" href="#id2">15.2程序设计</a></li>
+<li><a class="reference internal" href="#id3">15.3实验现象</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="hdmi_out.html"
+                          title="上一章">《第十四章》HDMI 输出实验</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="7lcd.html"
+                          title="下一章">《第十六章》7 寸液晶屏显示实验</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/hdmi_char.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="7lcd.html" title="《第十六章》7 寸液晶屏显示实验"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="hdmi_out.html" title="《第十四章》HDMI 输出实验"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">《第十五章》HDMI 字符显示实验</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2023, ALINX       http://www.alinx.com.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3创建。
+    </div>
+  </body>
+</html>

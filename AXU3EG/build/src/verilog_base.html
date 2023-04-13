@@ -1,0 +1,1594 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>《第三章》Verilog 基础模块介绍 &#8212; ZYNQ MPSoC开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="《第四章》PL的“Hello world”LED 实验" href="pl_led.html" />
+    <link rel="prev" title="《第二章》开发板硬件介绍" href="Hardware_introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="pl_led.html" title="《第四章》PL的“Hello world”LED 实验"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="Hardware_introduction.html" title="《第二章》开发板硬件介绍"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">《第三章》Verilog 基础模块介绍</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <img alt="../_images/88.png" src="../_images/88.png" />
+<section id="verilog">
+<h1>《第三章》Verilog 基础模块介绍<a class="headerlink" href="#verilog" title="此标题的永久链接">¶</a></h1>
+<section id="id1">
+<h2>3.1简介<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h2>
+<p>本文主要介绍verilog基础模块,夯实基础,对深入学习FPGA会有很大帮助。</p>
+</section>
+<section id="id2">
+<h2>3.2数据类型<a class="headerlink" href="#id2" title="此标题的永久链接">¶</a></h2>
+<p><strong>常量</strong></p>
+<ul class="simple">
+<li><p>整数: 整数可以用二进制b或B,八进制o或O,十进制d或D,十六进制h或H表示,例如, 8’b00001111表示8位位宽的二进制整数,4’ha表示4位位宽的十六进制整数。</p></li>
+<li><p>X和Z: X代表不定值,z代表高阻值,例如,5’b00x11,第三位不定值,3’b00z表示最低位为高阻值。</p></li>
+<li><p>下划线: 在位数过长时可以用来分割位数,提高程序可读性,如8’b0000_1111</p></li>
+<li><p>参数parameter: parameter可以用标识符定义常量,运用时只使用标识符即可,提高可读性及维护性,如定义parameter width = 8 ; 定义寄存器reg [width-1:0] a; 即定义了8位宽度的寄存器。</p></li>
+<li><p>参数的传递: 在一个模块中如果有定义参数,在其他模块调用此模块时可以传递参数,并可以修改参数,如下所示,在module后用# ( )表示。</p></li>
+</ul>
+<p>例如定义模块如下</p>
+<p>调用模块</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">rom</span>
+<span class="c1">#(</span>
+  <span class="n">parameter</span> <span class="n">depth</span> <span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+  <span class="n">parameter</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">8</span>
+  <span class="p">)</span>
+  <span class="p">(</span>
+   <span class="nb">input</span> <span class="p">[</span><span class="n">depth</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">addr</span> <span class="p">,</span>
+<span class="nb">input</span> <span class="p">[</span><span class="n">width</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data</span> <span class="p">,</span>
+<span class="n">output</span> <span class="n">result</span>
+<span class="p">)</span> <span class="p">;</span>
+<span class="n">endmodule</span>      <span class="n">module</span> <span class="n">top</span><span class="p">()</span> <span class="p">;</span>
+<span class="n">wire</span> <span class="p">[</span><span class="mi">31</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">addr</span> <span class="p">;</span>
+<span class="n">wire</span> <span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data</span> <span class="p">;</span>
+<span class="n">wire</span> <span class="n">result</span> <span class="p">;</span>
+<span class="n">rom</span>
+<span class="c1">#(</span>
+  <span class="o">.</span><span class="n">depth</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+  <span class="o">.</span><span class="n">width</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+  <span class="p">)</span>
+<span class="n">r1</span>
+<span class="p">(</span>
+<span class="o">.</span><span class="n">addr</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="p">,</span>
+<span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="p">,</span>
+<span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="p">)</span> <span class="p">;</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>Parameter可以用于模块间的参数传递,而localparam仅用于本模块内使用,不能用于参数传递。Localparam多用于状态机状态的定义。</p>
+</section>
+<section id="id3">
+<h2>3.3变量<a class="headerlink" href="#id3" title="此标题的永久链接">¶</a></h2>
+<p>变量是指程序运行时可以改变其值的量,下面主要介绍几个常用了变量类型。</p>
+<section id="wire">
+<h3>3.3.1 Wire 型<a class="headerlink" href="#wire" title="此标题的永久链接">¶</a></h3>
+<p>Wire 类型变量,也叫网络类型变量,用于结构实体之间的物理连接,如门与门之间,不能储存值,用连续赋值语句assign赋值,定义为wire [n-1:0] a ; 其中n代表位宽,如定义wire a ; assign a = b ; 是将b的结点连接到连线a上。如下图所示,两个实体之间的连线即是wire类型变量。</p>
+<img alt="../_images/image146.png" class="align-center" src="../_images/image146.png" />
+</section>
+<section id="reg">
+<h3>3.3.2 Reg 型<a class="headerlink" href="#reg" title="此标题的永久链接">¶</a></h3>
+<p>Reg 类型变量,也称为寄存器变量,可用来储存值,必须在always语句里使用。其定义为reg [n-1:0] a ;  表示n位位宽的寄存器,如reg [7:0] a; 表示定义8位位宽的寄存器a。如下所示定义了寄存器q,生成的电路为时序逻辑,右图为其结构,为D触发器。</p>
+<img alt="../_images/image226.png" class="align-center" src="../_images/image226.png" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">d</span>  <span class="p">;</span>
+<span class="nb">input</span> <span class="n">clk</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="n">q</span> <span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span> <span class="p">;</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>也可以生成组合逻辑,如数据选择器,敏感信号没有时钟,定义了reg Mux,最终生成电路为组合逻辑。</p>
+<img alt="../_images/image319.png" class="align-center" src="../_images/image319.png" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">sel</span><span class="p">,</span> <span class="n">Mux</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>   <span class="n">a</span> <span class="p">;</span>
+<span class="nb">input</span>   <span class="n">b</span> <span class="p">;</span>
+<span class="nb">input</span>   <span class="n">c</span> <span class="p">;</span>
+<span class="nb">input</span>   <span class="n">d</span> <span class="p">;</span>
+<span class="nb">input</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">sel</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="n">Mux</span> <span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">sel</span> <span class="ow">or</span> <span class="n">a</span> <span class="ow">or</span> <span class="n">b</span> <span class="ow">or</span> <span class="n">c</span> <span class="ow">or</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">case</span><span class="p">(</span><span class="n">sel</span><span class="p">)</span>
+    <span class="mi">2</span><span class="s1">&#39;b00 : Mux = a ;</span>
+    <span class="mi">2</span><span class="s1">&#39;b01 : Mux = b ;</span>
+    <span class="mi">2</span><span class="s1">&#39;b10 : Mux = c ;</span>
+    <span class="mi">2</span><span class="s1">&#39;b11 : Mux = d ;</span>
+  <span class="n">endcase</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+</section>
+<section id="memory">
+<h3>3.3.3 Memory型<a class="headerlink" href="#memory" title="此标题的永久链接">¶</a></h3>
+<p>可以用memory类型来定义RAM,ROM等存储器,其结构为reg [n-1:0] 存储器名[m-1:0],意义为m个n位宽度的寄存器。例如,reg [7:0] ram [255:0]表示定义了256个8位寄存器,256也即是存储器的深度,8为数据宽度。</p>
+</section>
+</section>
+<section id="id4">
+<h2>3.4运算符<a class="headerlink" href="#id4" title="此标题的永久链接">¶</a></h2>
+<p>运算符可分为以下几类:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>算术运算符 (+,-,*,/,% )</p></li>
+<li><p>赋值运算符 (=,&lt;= )</p></li>
+<li><p>关系运算符 (&gt;,&lt;,&gt;=,&lt;=,==, != )</p></li>
+<li><p>逻辑运算符 (&amp;&amp;,||, ! )</p></li>
+<li><p>条件运算符 ( ?: )</p></li>
+<li><p>位运算符 (~,|,^,&amp;,^~ )</p></li>
+<li><p>移位运算符 (&lt;&lt;,&gt;&gt; )</p></li>
+<li><p>拼接运算符 ({ } )</p></li>
+</ol>
+</div></blockquote>
+<section id="id5">
+<h3>3.4.1 算术运算符<a class="headerlink" href="#id5" title="此标题的永久链接">¶</a></h3>
+<p>“+”(加法运算符),”-“ (减法运算符 ),”*”(乘法运算符),”/” (除法运算符,如7/3 =2 ),“%” (取模运算符,也即求余数,如7%3=1,余数为1 )</p>
+</section>
+<section id="id6">
+<h3>3.4.2赋值运算符<a class="headerlink" href="#id6" title="此标题的永久链接">¶</a></h3>
+<p>“=”阻塞赋值,”&lt;=”非阻塞赋值。阻塞赋值为执行完一条赋值语句,再执行下一条,可理解为顺序执行,而且赋值是立即执行；非阻塞赋值可理解为并行执行,不考虑顺序,在always块语句执行完成后,才进行赋值。如下面的阻塞赋值:</p>
+<p>代码如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">din</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">clk</span><span class="p">);</span>
+<span class="nb">input</span> <span class="n">din</span><span class="p">;</span>
+<span class="nb">input</span> <span class="n">clk</span><span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">din</span><span class="p">;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg din ;
+reg clk ;
+wire a,b,c ;
+initial
+begin
+  din =  0 ;
+  clk = 0  ;
+  forever
+  begin
+    #({$random}%100)
+    din = ~din ;
+  end
+end
+always #10 clk = ~clk ;
+top  t0(.din(din),.a(a),.b(b),.c(c),.clk(clk)) ;
+endmodule
+</pre></div>
+</div>
+<p>可以从仿真结果看到,在clk的上升沿,a的值等于din,并立即赋给b,b的值赋给c。</p>
+<img alt="../_images/image415.png" class="align-center" src="../_images/image415.png" />
+<p>如果改为非阻塞赋值,仿真结果如下,在clk上升沿,a的值没有立即赋值给b,b为a原来的值,同样,c为b原来的值</p>
+<img alt="../_images/image515.png" class="align-center" src="../_images/image515.png" />
+<p>可以从两者的RTL图看出明显不同:</p>
+<img alt="../_images/image615.png" class="align-center" src="../_images/image615.png" />
+<p>阻塞赋值RTL图</p>
+<img alt="../_images/image714.png" class="align-center" src="../_images/image714.png" />
+<p>非阻塞赋值RTL图
+<strong>一般情况下,在时序逻辑电路中使用非阻塞赋值,可避免仿真时出现竞争冒险现象；在组合逻辑中使用阻塞赋值,执行赋值语句后立即改变;在assign语句中必须用阻塞赋值。</strong></p>
+</section>
+<section id="id7">
+<h3>3.4.3 关系运算符<a class="headerlink" href="#id7" title="此标题的永久链接">¶</a></h3>
+<p>用于表示两个操作数之间的关系,如a&gt;b,a&lt;b,多用于判断条件,例如:</p>
+<p>If (a&gt;=b) q &lt;=1’b1 ;</p>
+<p>else q &lt;= 1’b0 ;</p>
+<p>表示如果a的值大于等于b的值,则q的值为1,否则q的值为0</p>
+</section>
+<section id="id8">
+<h3>3.4.4 逻辑运算符<a class="headerlink" href="#id8" title="此标题的永久链接">¶</a></h3>
+<p>“&amp;&amp;” (两个操作数逻辑与 ),”||” (两个操作数逻辑或 ),”!” (单个操作数逻辑非 )例如:
+If (a&gt;b &amp;&amp; c &lt;d) 表示条件为a&gt;b并且c&lt;d; if (!a)表示条件为a的值不为1,也就是0。</p>
+</section>
+<section id="id9">
+<h3>3.4.5 条件运算符<a class="headerlink" href="#id9" title="此标题的永久链接">¶</a></h3>
+<p>“?:”为条件判断,类似于if else,例如assign a = (i&gt;8)?1’b1:1’b0 ;判断i的值是否大于8,如果大于8则a的值为1,否则为0。</p>
+</section>
+<section id="id10">
+<h3>3.4.6 位运算符<a class="headerlink" href="#id10" title="此标题的永久链接">¶</a></h3>
+<p>“~”按位取反,”|”按位或,”^”按位异或,”&amp;”按位与,”^”按位同或,除了”~”只需要一个操作数外,其他几个都需要两个操作数,如a&amp;b,a|b。具体应用在后面的组合逻辑一节中有讲解。</p>
+</section>
+<section id="id11">
+<h3>3.4.7 移位运算符<a class="headerlink" href="#id11" title="此标题的永久链接">¶</a></h3>
+<p>“&lt;&lt;”左移位运算符,”&gt;&gt;”右移位运算符,如a&lt;&lt;1表示,向左移1位,a&gt;&gt;2,向右移两位。</p>
+</section>
+<section id="id12">
+<h3>3.4.8 拼接运算符<a class="headerlink" href="#id12" title="此标题的永久链接">¶</a></h3>
+<p>“{ }”拼接运算符,将多个信号按位拼接,如{a[3:0], b[1:0]},将a的低4位,b的低2位拼接成6位数据。另外,{n{a[3:0]}}表示将n个a[3:0]拼接,{n{1’b0}}表示n位的0拼接。如{8{1’b0}}表示为8’b0000_0000.</p>
+</section>
+<section id="id13">
+<h3>3.4.9 优先级别<a class="headerlink" href="#id13" title="此标题的永久链接">¶</a></h3>
+<p>各种运算符的优先级别如下:</p>
+<img alt="../_images/image812.png" class="align-center" src="../_images/image812.png" />
+</section>
+</section>
+<section id="id14">
+<h2>3.5组合逻辑<a class="headerlink" href="#id14" title="此标题的永久链接">¶</a></h2>
+<p>本节主要介绍组合逻辑,组合逻辑电路的特点是任意时刻的输出仅仅取决于输入信号,输入信号变化,输出立即变化,不依赖于时钟。</p>
+<section id="id15">
+<h3>3.5.1 与门<a class="headerlink" href="#id15" title="此标题的永久链接">¶</a></h3>
+<p>在verilog中以“&amp;”表示按位与,如c=a&amp;b,真值表如下,在a和b都等于1时结果才为1,RTL表示如右图</p>
+<img alt="../_images/image912.png" class="align-center" src="../_images/image912.png" />
+<img alt="../_images/image1010.png" class="align-center" src="../_images/image1010.png" />
+<p>代码实现如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">a</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">b</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">c</span> <span class="p">;</span>
+<span class="n">assign</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&amp;</span> <span class="n">b</span> <span class="p">;</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg a ;
+reg b ;
+wire c ;
+initial
+begin
+  a = 0 ;
+  b = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    a = ~a ;
+    #({$random}%100)
+    b = ~b ;
+  end
+end
+top  t0(.a(a), .b(b),.c(c)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下:</p>
+<img alt="../_images/image1115.png" class="align-center" src="../_images/image1115.png" />
+<p>如果a和b的位宽大于1,例如定义input [3:0] a, input [3:0]b,那么a&amp;b则指a与b的对应位相与。如a[0]&amp;b[0],a[1]&amp;b[1]。</p>
+</section>
+<section id="id16">
+<h3>3.5.2 或门<a class="headerlink" href="#id16" title="此标题的永久链接">¶</a></h3>
+<p>在verilog中以“|”表示按位或,如c = a|b , 真值表如下,在a和b都为0时结果才为0。</p>
+<img alt="../_images/image1211.png" class="align-center" src="../_images/image1211.png" />
+<img alt="../_images/image1310.png" class="align-center" src="../_images/image1310.png" />
+<p>代码实现如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">a</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">b</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">c</span> <span class="p">;</span>
+<span class="n">assign</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">|</span> <span class="n">b</span> <span class="p">;</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg a ;
+reg b ;
+wire c ;
+initial
+begin
+  a = 0 ;
+  b = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    a = ~a ;
+    #({$random}%100)
+    b = ~b ;
+  end
+end
+top  t0(.a(a), .b(b),.c(c)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下:</p>
+<img alt="../_images/image147.png" class="align-center" src="../_images/image147.png" />
+<p>同理,位宽大于1,则是按位或。</p>
+</section>
+<section id="id17">
+<h3>3.5.3 非门<a class="headerlink" href="#id17" title="此标题的永久链接">¶</a></h3>
+<p>在verilog中以“~”表示按位取反,如b=~a,真值表如下,b等于a的相反数。</p>
+<img alt="../_images/image155.png" class="align-center" src="../_images/image155.png" />
+<img alt="../_images/image165.png" class="align-center" src="../_images/image165.png" />
+<p>代码实现如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>   <span class="n">a</span> <span class="p">;</span>
+<span class="n">output</span>  <span class="n">b</span> <span class="p">;</span>
+<span class="n">assign</span> <span class="n">b</span> <span class="o">=</span> <span class="o">~</span><span class="n">a</span> <span class="p">;</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg  a ;
+wire b ;
+initial
+begin
+  a = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    a = ~a ;
+  end
+end
+top  t0(.a(a), .b(b)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如如下:</p>
+<img alt="../_images/image174.png" class="align-center" src="../_images/image174.png" />
+</section>
+<section id="id18">
+<h3>3.5.4 异或<a class="headerlink" href="#id18" title="此标题的永久链接">¶</a></h3>
+<p>在verilog中以“^”表示异或,如c= a^b ,真值表如下,当a和b相同时,输出为0。</p>
+<img alt="../_images/image184.png" class="align-center" src="../_images/image184.png" />
+<img alt="../_images/image194.png" class="align-center" src="../_images/image194.png" />
+<p>代码实现如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">a</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">b</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">c</span> <span class="p">;</span>
+<span class="n">assign</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">^</span> <span class="n">b</span> <span class="p">;</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg a ;
+reg b ;
+wire c ;
+initial
+begin
+  a = 0 ;
+  b = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    a = ~a ;
+    #({$random}%100)
+    b = ~b ;
+  end
+end
+top  t0(.a(a), .b(b),.c(c)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下:</p>
+<img alt="../_images/image202.png" class="align-center" src="../_images/image202.png" />
+</section>
+<section id="id19">
+<h3>3.5.5比较器<a class="headerlink" href="#id19" title="此标题的永久链接">¶</a></h3>
+<p>在verilog中以大于“&gt;”,等于”==”,小于”&lt;”,大于等于”&gt;=”,小于等于”&lt;=”,不等于”!=”表示,以大于举例,如c= a &gt; b ;表示如果a大于b,那么c的值就为1,否则为0。真值表如下:</p>
+<img alt="../_images/image2110.png" class="align-center" src="../_images/image2110.png" />
+<img alt="../_images/image227.png" class="align-center" src="../_images/image227.png" />
+<p>代码实现如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">a</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">b</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">c</span> <span class="p">;</span>
+<span class="n">assign</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span> <span class="p">;</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg a ;
+reg b ;
+wire c ;
+initial
+begin
+  a = 0 ;
+  b = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    a = ~a ;
+    #({$random}%100)
+    b = ~b ;
+  end
+end
+top  t0(.a(a), .b(b),.c(c)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下:</p>
+<img alt="../_images/image232.png" class="align-center" src="../_images/image232.png" />
+</section>
+<section id="id20">
+<h3>3.5.6 半加器<a class="headerlink" href="#id20" title="此标题的永久链接">¶</a></h3>
+<p>半加器和全加器是算术运算电路中的基本单元,由于半加器不考虑从低位来的进位,所以称之为半加器,sum表示相加结果,count表示进位,真值表可表示如下:</p>
+<img alt="../_images/image241.png" class="align-center" src="../_images/image241.png" />
+<img alt="../_images/image251.png" class="align-center" src="../_images/image251.png" />
+<p>可根据真值表写出代码如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="nb">sum</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">a</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">b</span> <span class="p">;</span>
+<span class="n">output</span> <span class="nb">sum</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">count</span> <span class="p">;</span>
+<span class="n">assign</span> <span class="nb">sum</span> <span class="o">=</span> <span class="n">a</span> <span class="o">^</span> <span class="n">b</span> <span class="p">;</span>
+<span class="n">assign</span> <span class="n">count</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&amp;</span> <span class="n">b</span> <span class="p">;</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg a ;
+reg b ;
+wire sum ;
+wire count ;
+initial
+begin
+  a = 0 ;
+  b = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    a = ~a ;
+    #({$random}%100)
+    b = ~b ;
+  end
+  end
+top  t0(.a(a), .b(b),
+.sum(sum), .count(count)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下:</p>
+<img alt="../_images/image261.png" class="align-center" src="../_images/image261.png" />
+</section>
+<section id="id21">
+<h3>3.5.7 全加器<a class="headerlink" href="#id21" title="此标题的永久链接">¶</a></h3>
+<p>而全加器需要加上低位来的进位信号cin,真值表如下:</p>
+<img alt="../_images/image271.png" class="align-center" src="../_images/image271.png" />
+<img alt="../_images/image281.png" class="align-center" src="../_images/image281.png" />
+<p>代码如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">cin</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="nb">sum</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span> <span class="n">cin</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">a</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">b</span> <span class="p">;</span>
+<span class="n">output</span> <span class="nb">sum</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">count</span> <span class="p">;</span>
+<span class="n">assign</span> <span class="p">{</span><span class="n">count</span><span class="p">,</span><span class="nb">sum</span><span class="p">}</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">cin</span> <span class="p">;</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg a ;
+reg b ;
+reg cin ;
+wire sum ;
+wire count ;
+initial
+begin
+  a = 0 ;
+  b = 0 ;
+  cin = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    a = ~a ;
+    #({$random}%100)
+b = ~b ;
+#({$random}%100)
+    cin = ~cin ;
+  end
+end
+top  t0(.cin(cin),.a(a), .b(b),
+.sum(sum), .count(count)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下:</p>
+<img alt="../_images/image291.png" class="align-center" src="../_images/image291.png" />
+</section>
+<section id="id22">
+<h3>3.5.8乘法器<a class="headerlink" href="#id22" title="此标题的永久链接">¶</a></h3>
+<p>乘法的表示也很简单,利用”*”即可,如a*b,举例代码如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>module top(a, b, c) ;
+input  [1:0] a ;
+input  [1:0] b ;
+output [3:0] c ;
+assign c = a * b ;
+endmodule
+
+`timescale 1 ns/1 ns
+module top_tb() ;
+reg [1:0] a ;
+reg [1:0] b ;
+wire [3:0] c ;
+initial
+begin
+  a = 0 ;
+  b = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    a = ~a ;
+    #({$random}%100)
+    b = ~b ;
+  end
+end
+top  t0(.a(a), .b(b),.c(c)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下:</p>
+<img alt="../_images/image301.png" class="align-center" src="../_images/image301.png" />
+</section>
+<section id="id23">
+<h3>3.5.9 数据选择器<a class="headerlink" href="#id23" title="此标题的永久链接">¶</a></h3>
+<p>在verilog中经常会用到数据选择器,通过选择信号,选择不同的输入信号输出到输出端,如下图真值表,四选一数据选择器,sel[1:0]为选择信号,a,b,c,d为输入信号,Mux为输出信号。</p>
+<img alt="../_images/image3110.png" class="align-center" src="../_images/image3110.png" />
+<img alt="../_images/image561.png" class="align-center" src="../_images/image561.png" />
+<p>代码如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">sel</span><span class="p">,</span> <span class="n">Mux</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>   <span class="n">a</span> <span class="p">;</span>
+<span class="nb">input</span>   <span class="n">b</span> <span class="p">;</span>
+<span class="nb">input</span>   <span class="n">c</span> <span class="p">;</span>
+<span class="nb">input</span>   <span class="n">d</span> <span class="p">;</span>
+<span class="nb">input</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">sel</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="n">Mux</span> <span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">sel</span> <span class="ow">or</span> <span class="n">a</span> <span class="ow">or</span> <span class="n">b</span> <span class="ow">or</span> <span class="n">c</span> <span class="ow">or</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">case</span><span class="p">(</span><span class="n">sel</span><span class="p">)</span>
+    <span class="mi">2</span><span class="s1">&#39;b00 : Mux = a ;</span>
+    <span class="mi">2</span><span class="s1">&#39;b01 : Mux = b ;</span>
+    <span class="mi">2</span><span class="s1">&#39;b10 : Mux = c ;</span>
+    <span class="mi">2</span><span class="s1">&#39;b11 : Mux = d ;</span>
+  <span class="n">endcase</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg  a ;
+reg  b ;
+reg  c ;
+reg  d ;
+reg [1:0] sel ;
+wire  Mux ;
+initial
+begin
+  a = 0 ;
+  b = 0 ;
+  c = 0 ;
+  d = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    a = {$random}%3 ;
+    #({$random}%100)
+    b = {$random}%3 ;
+    #({$random}%100)
+    c = {$random}%3 ;
+    #({$random}%100)
+    d = {$random}%3 ;
+  end
+  end
+initial
+begin
+  sel = 2&#39;b00 ;
+  #2000 sel =  2&#39;b01 ;
+  #2000 sel =  2&#39;b10 ;
+  #2000 sel =  2&#39;b11 ;
+end
+top
+t0(.a(a), .b(b),.c(c),.d(d), .sel(sel),
+.Mux(Mux)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下</p>
+<img alt="../_images/image321.png" class="align-center" src="../_images/image321.png" />
+</section>
+<section id="id24">
+<h3>3.5.10 3-8译码器<a class="headerlink" href="#id24" title="此标题的永久链接">¶</a></h3>
+<p>3-8译码器是一个很常用的器件,其真值表如下所示,根据A2,A1,A0的值,得出不同的结果。</p>
+<img alt="../_images/image331.png" class="align-center" src="../_images/image331.png" />
+<img alt="../_images/image341.png" class="align-center" src="../_images/image341.png" />
+<p>代码如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">decoder</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">addr</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">decoder</span> <span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">case</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+    <span class="mi">3</span><span class="s1">&#39;b000 : decoder = 8&#39;</span><span class="n">b1111_1110</span> <span class="p">;</span>
+    <span class="mi">3</span><span class="s1">&#39;b001 : decoder = 8&#39;</span><span class="n">b1111_1101</span> <span class="p">;</span>
+    <span class="mi">3</span><span class="s1">&#39;b010 : decoder = 8&#39;</span><span class="n">b1111_1011</span> <span class="p">;</span>
+    <span class="mi">3</span><span class="s1">&#39;b011 : decoder = 8&#39;</span><span class="n">b1111_0111</span> <span class="p">;</span>
+    <span class="mi">3</span><span class="s1">&#39;b100 : decoder = 8&#39;</span><span class="n">b1110_1111</span> <span class="p">;</span>
+    <span class="mi">3</span><span class="s1">&#39;b101 : decoder = 8&#39;</span><span class="n">b1101_1111</span> <span class="p">;</span>
+    <span class="mi">3</span><span class="s1">&#39;b110 : decoder = 8&#39;</span><span class="n">b1011_1111</span> <span class="p">;</span>
+    <span class="mi">3</span><span class="s1">&#39;b111 : decoder = 8&#39;</span><span class="n">b0111_1111</span> <span class="p">;</span>
+  <span class="n">endcase</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg  [2:0]  addr ;
+wire  [7:0] decoder ;
+initial
+begin
+  addr = 3&#39;b000 ;
+  #2000 addr =  3&#39;b001 ;
+  #2000 addr =  3&#39;b010 ;
+  #2000 addr =  3&#39;b011 ;
+  #2000 addr =  3&#39;b100 ;
+  #2000 addr =  3&#39;b101 ;
+  #2000 addr =  3&#39;b110 ;
+  #2000 addr =  3&#39;b111 ;
+end
+top
+t0(.addr(addr),.decoder(decoder)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下:</p>
+<img alt="../_images/image351.png" class="align-center" src="../_images/image351.png" />
+</section>
+<section id="id25">
+<h3>3.5.11 三态门<a class="headerlink" href="#id25" title="此标题的永久链接">¶</a></h3>
+<p>在FPGA使用中,经常会用到双向IO,需要用到三态门,如bio = en? din: 1’bz ;其中en为使能信号,用于打开关闭三态门,下面的RTL图即是实现了双向IO,可参考代码。激励文件实现两个双向IO的对接。</p>
+<img alt="../_images/image361.png" class="align-center" src="../_images/image361.png" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>module top(en, din, dout, bio) ;
+input  din  ;
+input  en ;
+output dout ;
+inout bio ;
+assign bio = en? din : 1&#39;bz ;
+assign dout = bio ;
+endmodule
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg en0 ;
+reg din0 ;
+wire dout0 ;
+reg en1 ;
+reg din1 ;
+wire dout1 ;
+wire bio ;
+initial
+begin
+  din0 = 0 ;
+  din1 = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    din0 = ~din0 ;
+    #({$random}%100)
+din1 = ~din1 ;
+  end
+end
+initial
+begin
+  en0 = 0 ;
+  en1 = 1 ;
+  #100000
+  en0 = 1 ;
+  en1 = 0 ;
+end
+top
+t0(.en(en0),.din(din0),.dout(dout0),.bi
+o(bio)) ;
+top
+t1(.en(en1),.din(din1),.dout(dout1),.bi
+o(bio)) ;
+endmodule
+</pre></div>
+</div>
+<p>激励文件结构如下图</p>
+<img alt="../_images/image371.png" class="align-center" src="../_images/image371.png" />
+<p>仿真结果如下,en0为0,en1为1时,1通道打开,双向IO bio就等于1通道的din1,1通道向外发送数据,0通道接收数据,dout0等于bio；当en0为1,en1为0时,0通道打开,双向IO bio就等于0通道的din0,0通道向外发送数据,1通道接收数据,dout1等于bio</p>
+<img alt="../_images/image381.png" class="align-center" src="../_images/image381.png" />
+</section>
+</section>
+<section id="id26">
+<h2>3.6时序逻辑<a class="headerlink" href="#id26" title="此标题的永久链接">¶</a></h2>
+<p>组合逻辑电路在逻辑功能上特点是任意时刻的输出仅仅取决于当前时刻的输入,与电路原来的状态无关。而时序逻辑在逻辑功能上的特点是任意时刻的输出不仅仅取决于当前的输入信号,而且还取决于电路原来的状态。下面以典型的时序逻辑分析。</p>
+<section id="d">
+<h3>3.6.1 D触发器<a class="headerlink" href="#d" title="此标题的永久链接">¶</a></h3>
+<p>D触发器在时钟的上升沿或下降沿存储数据,输出与时钟跳变之前输入信号的状态相同。
+代码如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">d</span>  <span class="p">;</span>
+<span class="nb">input</span> <span class="n">clk</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="n">q</span> <span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span> <span class="p">;</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg d ;
+reg clk ;
+wire q ;
+initial
+begin
+  d = 0 ;
+  clk = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    d = ~d ;
+  end
+end
+always #10 clk = ~clk ;
+top  t0(.d(d),.clk(clk),.q(q)) ;
+endmodule
+</pre></div>
+</div>
+<p>RTL图表示如下</p>
+<img alt="../_images/image571.png" class="align-center" src="../_images/image571.png" />
+<p>仿真结果如下,可以看到在t0时刻时,d的值为0,则q的值也为0;在t1时刻d发生了变化,值为1,那么q相应也发生了变化,值变为1。可以看到在t0-t1之间的一个时钟周期内,无论输入信号d的值如何变化,q的值是保持不变的,也就是有存储的功能,保存的值为在时钟的跳变沿时d的值。</p>
+<img alt="../_images/image391.png" class="align-center" src="../_images/image391.png" />
+</section>
+<section id="id27">
+<h3>3.6.2 两级D触发器<a class="headerlink" href="#id27" title="此标题的永久链接">¶</a></h3>
+<p>软件是按照两级D触发器的模型进行时序分析的,具体可以分析在同一时刻两个D触发器输出的数据有何不同,其RTL图如下:</p>
+<img alt="../_images/image40.png" class="align-center" src="../_images/image40.png" />
+<p>代码如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">q1</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">d</span>  <span class="p">;</span>
+<span class="nb">input</span> <span class="n">clk</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="n">q</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="n">q1</span> <span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span> <span class="p">;</span>
+<span class="n">end</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="n">q1</span> <span class="o">&lt;=</span> <span class="n">q</span> <span class="p">;</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg d ;
+reg clk ;
+wire q ;
+wire q1 ;
+initial
+begin
+  d = 0 ;
+  clk = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    d = ~d ;
+  end
+end
+always #10 clk = ~clk ;
+top
+t0(.d(d),.clk(clk),.q(q),.q1(q1)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下,可以看到t0时刻,d为0,q输出为0,t1时刻,q随着d的数据变化而变化,而此时钟跳变之前q的值仍为0,那么q1的值仍为0,t2时刻,时钟跳变前q的值为1,则q1的值相应为1,q1相对于q落后一个周期。</p>
+<img alt="../_images/image416.png" class="align-center" src="../_images/image416.png" />
+</section>
+<section id="id28">
+<h3>3.6.3 带异步复位的D触发器<a class="headerlink" href="#id28" title="此标题的永久链接">¶</a></h3>
+<p>异步复位是指独立于时钟,一旦异步复位信号有效,就触发复位操作。这个功能在写代码时会经常用到,用于给信号复位,初始化。其RTL图如下:</p>
+<img alt="../_images/image421.png" class="align-center" src="../_images/image421.png" />
+<p>代码如下,注意要把异步复位信号放在敏感列表里,如果是低电平复位,即为negedge,如果是高电平复位,则是posedge</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">rst</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">d</span>  <span class="p">;</span>
+<span class="nb">input</span> <span class="n">rst</span> <span class="p">;</span>
+<span class="nb">input</span> <span class="n">clk</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="n">q</span> <span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span> <span class="ow">or</span> <span class="n">negedge</span> <span class="n">rst</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">rst</span> <span class="o">==</span> <span class="mi">1</span><span class="s1">&#39;b0)</span>
+    <span class="n">q</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="p">;</span>
+  <span class="k">else</span>
+    <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span> <span class="p">;</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg d ;
+reg rst ;
+reg clk ;
+wire q ;
+initial
+begin
+  d = 0 ;
+  clk = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    d = ~d ;
+  end
+end
+initial
+begin
+  rst = 0 ;
+  #200 rst = 1 ;
+end
+always #10 clk = ~clk ;
+top
+t0(.d(d),.rst(rst),.clk(clk),.q(q)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下,可以看到在复位信号之前,虽然输入信号d数据有变化,但由于正处于复位状态,输入信号q始终为0,在复位之后q的值就正常了。</p>
+<img alt="../_images/image431.png" class="align-center" src="../_images/image431.png" />
+</section>
+<section id="id29">
+<h3>3.6.4 带异步复位同步清零的D触发器<a class="headerlink" href="#id29" title="此标题的永久链接">¶</a></h3>
+<p>前面讲到异步复位独立于时钟操作,而同步清零则是同步于时钟信号下操作的,当然也不仅限于同步清零,也可以是其他的同步操作,其RTL图如下:</p>
+<img alt="../_images/image441.png" class="align-center" src="../_images/image441.png" />
+<p>代码如下,不同于异步复位,同步操作不能把信号放到敏感列表里</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">rst</span><span class="p">,</span> <span class="n">clr</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">d</span>  <span class="p">;</span>
+<span class="nb">input</span> <span class="n">rst</span> <span class="p">;</span>
+<span class="nb">input</span> <span class="n">clr</span> <span class="p">;</span>
+<span class="nb">input</span> <span class="n">clk</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="n">q</span> <span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span> <span class="ow">or</span> <span class="n">negedge</span> <span class="n">rst</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">rst</span> <span class="o">==</span> <span class="mi">1</span><span class="s1">&#39;b0)</span>
+    <span class="n">q</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="p">;</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">clr</span> <span class="o">==</span> <span class="mi">1</span><span class="s1">&#39;b1)</span>
+    <span class="n">q</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="p">;</span>
+  <span class="k">else</span>
+    <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span> <span class="p">;</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg d ;
+reg rst ;
+reg clr ;
+reg clk ;
+wire q ;
+initial
+begin
+  d = 0 ;
+  clk = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    d = ~d ;
+  end
+end
+initial
+begin
+  rst = 0 ;
+  clr = 0 ;
+  #200 rst = 1 ;
+  #200 clr = 1 ;
+  #100 clr = 0 ;
+end
+always #10 clk = ~clk ;
+top
+t0(.d(d),.rst(rst),.clr(clr),.clk(clk),
+.q(q)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下,可以看到clr信号拉高后,q没有立即清零,而是在下个clk上升沿之后执行清零操作,也就是clr同步于clk。</p>
+<img alt="../_images/image451.png" class="align-center" src="../_images/image451.png" />
+</section>
+<section id="id30">
+<h3>3.6.5 移位寄存器<a class="headerlink" href="#id30" title="此标题的永久链接">¶</a></h3>
+<p>移位寄存器是指在每个时钟脉冲来时,向左或向右移动一位,由于D触发器的特性,数据输出同步于时钟边沿,其结构如下,每个时钟来临,每个D触发器的输出q等于前一个D触发器输出的值,从而实现移位的功能。</p>
+<img alt="../_images/image461.png" class="align-center" src="../_images/image461.png" />
+<p>代码实现:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">rst</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="p">;</span>
+<span class="nb">input</span>  <span class="n">d</span>  <span class="p">;</span>
+<span class="nb">input</span> <span class="n">rst</span> <span class="p">;</span>
+<span class="nb">input</span> <span class="n">clk</span> <span class="p">;</span>
+<span class="n">output</span> <span class="n">reg</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">q</span> <span class="p">;</span>
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span> <span class="ow">or</span> <span class="n">negedge</span> <span class="n">rst</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">rst</span> <span class="o">==</span> <span class="mi">1</span><span class="s1">&#39;b0)</span>
+    <span class="n">q</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="p">;</span>
+  <span class="k">else</span>
+    <span class="n">q</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">q</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">}</span> <span class="p">;</span>  <span class="o">//</span><span class="n">向左移位</span>
+  <span class="o">//</span><span class="n">q</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">d</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">1</span><span class="p">]}</span> <span class="p">;</span>  <span class="o">//</span><span class="n">向右移位</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg d ;
+reg rst ;
+reg clk ;
+wire [7:0] q ;
+initial
+begin
+  d = 0 ;
+  clk = 0 ;
+  forever
+  begin
+    #({$random}%100)
+    d = ~d ;
+  end
+end
+initial
+begin
+  rst = 0 ;
+  #200 rst = 1 ;
+end
+always #10 clk = ~clk ;
+top
+t0(.d(d),.rst(rst),.clk(clk),.q(q)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下,可以看到复位之后,每个clk上升沿左移一位</p>
+<img alt="../_images/image471.png" class="align-center" src="../_images/image471.png" />
+</section>
+<section id="ram">
+<h3>3.6.6 单口RAM<a class="headerlink" href="#ram" title="此标题的永久链接">¶</a></h3>
+<p>单口RAM的写地址与读地址共用一个地址,代码如下,其中reg [7:0] ram [63:0]意思是定义了64个8位宽度的数据。其中定义了addr_reg,可以保持住读地址,延迟一周期之后将数据送出。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span>
+<span class="p">(</span>
+  <span class="nb">input</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">addr</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="n">wr</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="n">clk</span><span class="p">,</span>
+  <span class="n">output</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">q</span>
+<span class="p">);</span>
+<span class="n">reg</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">ram</span><span class="p">[</span><span class="mi">63</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>   <span class="o">//</span><span class="n">declare</span> <span class="n">ram</span>
+<span class="n">reg</span> <span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">addr_reg</span><span class="p">;</span>    <span class="o">//</span><span class="n">addr</span> <span class="n">register</span>
+<span class="n">always</span> <span class="o">@</span> <span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">wr</span><span class="p">)</span>               <span class="o">//</span><span class="n">write</span>
+    <span class="n">ram</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">data</span><span class="p">;</span>
+  <span class="n">addr_reg</span> <span class="o">&lt;=</span> <span class="n">addr</span><span class="p">;</span>
+<span class="n">end</span>
+<span class="n">assign</span> <span class="n">q</span> <span class="o">=</span> <span class="n">ram</span><span class="p">[</span><span class="n">addr_reg</span><span class="p">];</span>  <span class="o">//</span><span class="n">read</span> <span class="n">data</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg [7:0] data ;
+reg [5:0] addr ;
+reg wr ;
+reg clk ;
+wire [7:0] q ;
+initial
+begin
+  data = 0 ;
+  addr = 0 ;
+  wr = 1 ;
+  clk = 0 ;
+  end
+always #10 clk = ~clk ;
+always @(posedge clk)
+begin
+  data &lt;= data + 1&#39;b1 ;
+  addr &lt;= addr + 1&#39;b1 ;
+end
+top  t0(.data(data),
+        .addr(addr),
+        .clk(clk),
+        .wr(wr),
+        .q(q)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下,可以看到q的输出与写入的数据一致</p>
+<img alt="../_images/image481.png" class="align-center" src="../_images/image481.png" />
+</section>
+<section id="id31">
+<h3>3.6.7 伪双口RAM<a class="headerlink" href="#id31" title="此标题的永久链接">¶</a></h3>
+<p>伪双口RAM的读写地址是独立的,可以随机选择写或读地址,同时进行读写操作。代码如下,在激励文件中定义了en信号,在其有效时发送读地址。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span>
+<span class="p">(</span>
+  <span class="nb">input</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">write_addr</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">read_addr</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="n">wr</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="n">rd</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="n">clk</span><span class="p">,</span>
+  <span class="n">output</span> <span class="n">reg</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">q</span>
+<span class="p">);</span>
+<span class="n">reg</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">ram</span><span class="p">[</span><span class="mi">63</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>   <span class="o">//</span><span class="n">declare</span> <span class="n">ram</span>
+<span class="n">reg</span> <span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">addr_reg</span><span class="p">;</span>    <span class="o">//</span><span class="n">addr</span> <span class="n">register</span>
+<span class="n">always</span> <span class="o">@</span> <span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">wr</span><span class="p">)</span>               <span class="o">//</span><span class="n">write</span>
+    <span class="n">ram</span><span class="p">[</span><span class="n">write_addr</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">data</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">rd</span><span class="p">)</span>               <span class="o">//</span><span class="n">read</span>
+     <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">ram</span><span class="p">[</span><span class="n">read_addr</span><span class="p">];</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg [7:0] data ;
+reg [5:0] write_addr ;
+reg [5:0] read_addr ;
+reg wr ;
+reg clk ;
+reg rd ;
+wire [7:0] q ;
+initial
+begin
+  data = 0 ;
+  write_addr = 0 ;
+  read_addr = 0 ;
+  wr = 0 ;
+  rd = 0 ;
+  clk = 0 ;
+  #100 wr = 1 ;
+  #20 rd = 1 ;
+end
+always #10 clk = ~clk ;
+always @(posedge clk)
+begin
+  if (wr)
+  begin
+     data &lt;= data + 1&#39;b1 ;
+     write_addr &lt;= write_addr + 1&#39;b1 ;
+     if (rd)
+       read_addr &lt;= read_addr + 1&#39;b1 ;
+  end
+end
+top  t0(.data(data),
+        .write_addr(write_addr),
+        .read_addr(read_addr),
+        .clk(clk),
+        .wr(wr),
+        .rd(rd),
+        .q(q)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下,可以看到在rd有效时,对读地址进行操作,读出数据</p>
+<img alt="../_images/image491.png" class="align-center" src="../_images/image491.png" />
+<p>3.6.8 真双口RAM
+真双口RAM有两套控制线,数据线,允许两个系统对其进行读写操作,代码如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span>
+<span class="p">(</span>
+  <span class="nb">input</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_a</span><span class="p">,</span> <span class="n">data_b</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">addr_a</span><span class="p">,</span> <span class="n">addr_b</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="n">wr_a</span><span class="p">,</span> <span class="n">wr_b</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="n">rd_a</span><span class="p">,</span> <span class="n">rd_b</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="n">clk</span><span class="p">,</span>
+  <span class="n">output</span> <span class="n">reg</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">q_a</span><span class="p">,</span> <span class="n">q_b</span>
+<span class="p">);</span>
+<span class="n">reg</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">ram</span><span class="p">[</span><span class="mi">63</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>   <span class="o">//</span><span class="n">declare</span> <span class="n">ram</span>
+<span class="o">//</span><span class="n">Port</span> <span class="n">A</span>
+<span class="n">always</span> <span class="o">@</span> <span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">wr_a</span><span class="p">)</span>               <span class="o">//</span><span class="n">write</span>
+    <span class="n">begin</span>
+     <span class="n">ram</span><span class="p">[</span><span class="n">addr_a</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">data_a</span><span class="p">;</span>
+     <span class="n">q_a</span> <span class="o">&lt;=</span> <span class="n">data_a</span> <span class="p">;</span>
+    <span class="n">end</span>
+         <span class="k">if</span> <span class="p">(</span><span class="n">rd_a</span><span class="p">)</span>
+<span class="o">//</span><span class="n">read</span>
+     <span class="n">q_a</span> <span class="o">&lt;=</span> <span class="n">ram</span><span class="p">[</span><span class="n">addr_a</span><span class="p">];</span>
+<span class="n">end</span>
+<span class="o">//</span><span class="n">Port</span> <span class="n">B</span>
+<span class="n">always</span> <span class="o">@</span> <span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">wr_b</span><span class="p">)</span>               <span class="o">//</span><span class="n">write</span>
+    <span class="n">begin</span>
+     <span class="n">ram</span><span class="p">[</span><span class="n">addr_b</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">data_b</span><span class="p">;</span>
+     <span class="n">q_b</span> <span class="o">&lt;=</span> <span class="n">data_b</span> <span class="p">;</span>
+    <span class="n">end</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">rd_b</span><span class="p">)</span>
+<span class="o">//</span><span class="n">read</span>
+     <span class="n">q_b</span> <span class="o">&lt;=</span> <span class="n">ram</span><span class="p">[</span><span class="n">addr_b</span><span class="p">];</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg [7:0] data_a, data_b ;
+reg [5:0] addr_a, addr_b ;
+reg wr_a, wr_b ;
+reg rd_a, rd_b ;
+reg clk ;
+wire [7:0] q_a, q_b ;
+initial
+begin
+  data_a = 0 ;
+  data_b = 0 ;
+  addr_a = 0 ;
+  addr_b = 0 ;
+  wr_a = 0 ;
+  wr_b = 0 ;
+  rd_a =  0 ;
+  rd_b = 0 ;
+  clk = 0 ;
+  #100 wr_a = 1 ;
+  #100 rd_b = 1 ;
+end
+always #10 clk = ~clk ;
+always @(posedge clk)
+begin
+  if (wr_a)
+  begin
+    data_a &lt;= data_a + 1&#39;b1 ;
+    addr_a &lt;= addr_a + 1&#39;b1 ;
+  end
+  else
+begin
+     data_a &lt;= 0 ;
+     addr_a &lt;= 0 ;
+  end
+end
+always @(posedge clk)
+begin
+  if (rd_b)
+    begin
+     addr_b &lt;= addr_b + 1&#39;b1 ;
+    end
+  else addr_b &lt;= 0 ;
+end
+top
+t0(.data_a(data_a), .data_b(data_b),
+        .addr_a(addr_a), .addr_b(addr_b
+),
+        .wr_a(wr_a), .wr_b(wr_b),
+        .rd_a(rd_a), .rd_b(rd_b),
+        .clk(clk),
+        .q_a(q_a), .q_b(q_b)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下</p>
+<img alt="../_images/image50.png" class="align-center" src="../_images/image50.png" />
+</section>
+<section id="rom">
+<h3>3.6.9 单口ROM<a class="headerlink" href="#rom" title="此标题的永久链接">¶</a></h3>
+<p>ROM是用来存储数据的,可以按照下列代码形式初始化ROM,但这种方法处理大容量的ROM就比较麻烦,建议用FPGA自带的ROM IP核实现,并添加初始化文件。
+代码实现</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">top</span>
+<span class="p">(</span>
+  <span class="nb">input</span> <span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">addr</span><span class="p">,</span>
+  <span class="nb">input</span> <span class="n">clk</span><span class="p">,</span>
+  <span class="n">output</span> <span class="n">reg</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">q</span>
+<span class="p">);</span>
+
+<span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span><span class="p">)</span>
+<span class="n">begin</span>
+  <span class="k">case</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+   <span class="mi">4</span><span class="s1">&#39;d0  : q &lt;= 8&#39;</span><span class="n">d15</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d1  : q &lt;= 8&#39;</span><span class="n">d24</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d2  : q &lt;= 8&#39;</span><span class="n">d100</span> <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d3  : q &lt;= 8&#39;</span><span class="n">d78</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d4  : q &lt;= 8&#39;</span><span class="n">d98</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d5  : q &lt;= 8&#39;</span><span class="n">d105</span> <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d6  : q &lt;= 8&#39;</span><span class="n">d86</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d7  : q &lt;= 8&#39;</span><span class="n">d254</span> <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d8  : q &lt;= 8&#39;</span><span class="n">d76</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d9  : q &lt;= 8&#39;</span><span class="n">d35</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d10 : q &lt;= 8&#39;</span><span class="n">d120</span> <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d11 : q &lt;= 8&#39;</span><span class="n">d85</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d12 : q &lt;= 8&#39;</span><span class="n">d37</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d13 : q &lt;= 8&#39;</span><span class="n">d19</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d14 : q &lt;= 8&#39;</span><span class="n">d22</span>  <span class="p">;</span>
+   <span class="mi">4</span><span class="s1">&#39;d15 : q &lt;= 8&#39;</span><span class="n">d67</span>  <span class="p">;</span>
+   <span class="n">default</span><span class="p">:</span> <span class="n">q</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="s1">&#39;d0 ;</span>
+  <span class="n">endcase</span>
+<span class="n">end</span>
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>激励文件</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg [3:0] addr ;
+reg clk ;
+wire [7:0] q ;
+
+initial
+begin
+  addr = 0 ;
+  clk = 0 ;
+end
+always #10 clk = ~clk ;
+always @(posedge clk)
+begin
+     addr &lt;= addr + 1&#39;b1 ;
+end
+top  t0(.addr(addr),
+        .clk(clk),
+        .q(q)) ;
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下</p>
+<img alt="../_images/image516.png" class="align-center" src="../_images/image516.png" />
+</section>
+<section id="id32">
+<h3>3.6.10 有限状态机<a class="headerlink" href="#id32" title="此标题的永久链接">¶</a></h3>
+<p>在verilog里经常会用到有限状态机,处理相对复杂的逻辑,设定好不同的状态,根据触发条件跳转到对应的状态,在不同的状态下做相应的处理。有限状态机主要用到always及case语句。下面以一个四状态的有限状态机举例说明。</p>
+<img alt="../_images/image521.png" class="align-center" src="../_images/image521.png" />
+<p>在程序中设计了8位的移位寄存器,在Idle状态下,判断shift_start信号是否为高,如果为高,进入Start状态,在Start状态延迟100个周期,进入Run状态,进行移位处理,如果shift_stop信号有效了,进入Stop状态,在Stop状态,清零q的值,再跳转到Idle状态。
+Mealy有限状态机,输出不仅与当前状态有关,也与输入信号有关,在RTL中会与输入信号有连接。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>module top
+(
+  input shift_start,
+  input shift_stop,
+  input rst,
+  input clk,
+  input d,
+  output reg [7:0] q
+);
+
+parameter Idle  = 2&#39;d0 ;    //Idle state
+parameter Start = 2&#39;d1 ;    //Start state
+parameter Run   = 2&#39;d2 ;    //Run state
+parameter Stop  = 2&#39;d3 ;    //Stop state
+
+reg [1:0] state ;           //statement
+reg [4:0] delay_cnt ;       //delay counter
+
+always @(posedge clk or negedge rst)
+begin
+  if (!rst)
+  begin
+   state &lt;= Idle ;
+   delay_cnt &lt;= 0 ;
+   q &lt;= 0 ;
+   end
+  else
+  case(state)
+    Idle  : begin
+             if (shift_start)
+                state &lt;= Start ;
+    end
+    Start : begin
+              if (delay_cnt == 5&#39;d99)
+              begin
+                delay_cnt &lt;= 0 ;
+                state &lt;= Run ;
+              end
+              else
+                delay_cnt &lt;= delay_cnt + 1&#39;b1 ;
+            end
+    Run   : begin
+              if (shift_stop)
+                 state &lt;= Stop ;
+              else
+                 q &lt;= {q[6:0], d} ;
+            end
+    Stop  : begin
+              q &lt;= 0 ;
+              state &lt;= Idle ;
+           end
+  default: state &lt;= Idle ;
+   endcase
+end
+endmodule
+</pre></div>
+</div>
+<p>Moore有限状态机,输出只与当前状态有关,与输入信号无关,输入信号只影响状态的改变,不影响输出,比如对delay_cnt和q的处理,只与state状态有关。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>module top
+(
+  input shift_start,
+  input shift_stop,
+  input rst,
+  input clk,
+  input d,
+  output reg [7:0] q
+);
+
+parameter Idle  = 2&#39;d0 ;    //Idle state
+parameter Start = 2&#39;d1 ;    //Start state
+parameter Run   = 2&#39;d2 ;    //Run state
+parameter Stop  = 2&#39;d3 ;    //Stop state
+
+reg [1:0] current_state ;           //statement
+reg [1:0] next_state ;
+reg [4:0] delay_cnt ;       //delay counter
+//First part: statement transition
+always @(posedge clk or negedge rst)
+begin
+  if (!rst)
+   current_state &lt;= Idle ;
+  else
+   current_state &lt;= next_state ;
+end
+//Second part: combination logic, judge statement transition condition
+always @(*)
+begin
+  case(current_state)
+    Idle  : begin
+              if (shift_start)
+                  next_state &lt;= Start ;
+              else
+                  next_state &lt;= Idle ;
+    end
+    Start : begin
+              if (delay_cnt == 5&#39;d99)
+                  next_state &lt;= Run ;
+              else
+                  next_state &lt;= Start ;
+            end
+    Run   : begin
+              if (shift_stop)
+                 next_state &lt;= Stop ;
+              else
+                 next_state &lt;= Run ;
+            end
+    Stop  :      next_state &lt;= Idle ;
+   default:      next_state &lt;= Idle ;
+  endcase
+end
+//Last part: output data
+always @(posedge clk or negedge rst)
+begin
+  if (!rst)
+    delay_cnt &lt;= 0 ;
+  else if (current_state == Start)
+    delay_cnt &lt;= delay_cnt + 1&#39;b1 ;
+  else
+    delay_cnt &lt;= 0 ;
+end
+
+always @(posedge clk or negedge rst)
+begin
+  if (!rst)
+    q &lt;= 0 ;
+  else if (current_state == Run)
+    q &lt;= {q[6:0], d} ;
+  else
+    q &lt;= 0 ;
+end
+
+
+endmodule
+</pre></div>
+</div>
+<p>在上面两个程序中用到了两种方式的写法,第一种的Mealy状态机,采用了一段式的写法,只用了一个always语句,所有的状态转移,判断状态转移条件,数据输出都在一个always语句里,缺点是如果状态太多,会使整段程序显的冗长。第二个Moore状态机,采用了三段式的写法,状态转移用了一个always语句,判断状态转移条件是组合逻辑,采用了一个always语句,数据输出也是单独的 always语句,这样写起来比较直观清晰,状态很多时也不会显得繁琐。</p>
+<img alt="../_images/image531.png" class="align-center" src="../_images/image531.png" />
+<p>Mealy有限状态机RTL图</p>
+<img alt="../_images/image541.png" class="align-center" src="../_images/image541.png" />
+<p>Moore有限状态机RTL图</p>
+<p>激励文件如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1 ns/1 ns
+module top_tb() ;
+reg shift_start ;
+reg shift_stop ;
+reg rst ;
+reg clk ;
+reg d ;
+wire [7:0] q ;
+
+initial
+begin
+  rst = 0 ;
+  clk = 0 ;
+  d = 0 ;
+  #200 rst = 1 ;
+  forever
+  begin
+    #({$random}%100)
+    d = ~d ;
+  end
+end
+
+initial
+begin
+  shift_start = 0 ;
+  shift_stop = 0 ;
+  #300 shift_start = 1 ;
+  #1000 shift_start = 0 ;
+        shift_stop  = 1 ;
+  #50 shift_stop = 0 ;
+end
+
+always #10 clk = ~clk ;
+
+top  t0
+(
+  .shift_start(shift_start),
+  .shift_stop(shift_stop),
+  .rst(rst),
+  .clk(clk),
+  .d(d),
+  .q(q)
+);
+endmodule
+</pre></div>
+</div>
+<p>仿真结果如下:</p>
+<img alt="../_images/image551.png" class="align-center" src="../_images/image551.png" />
+</section>
+</section>
+<section id="id33">
+<h2>3.7总结<a class="headerlink" href="#id33" title="此标题的永久链接">¶</a></h2>
+<p>本文档介绍了组合逻辑以及时序逻辑中常用的模块,其中有限状态机较为复杂,但经常用到,希望大家能够深入理解,在代码中多运用,多思考,有利于快速提升水平。
+.. image:: images/images_0/888.png</p>
+<p><em>ZYNQ MPSoC开发平台FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">《第三章》Verilog 基础模块介绍</a><ul>
+<li><a class="reference internal" href="#id1">3.1简介</a></li>
+<li><a class="reference internal" href="#id2">3.2数据类型</a></li>
+<li><a class="reference internal" href="#id3">3.3变量</a><ul>
+<li><a class="reference internal" href="#wire">3.3.1 Wire 型</a></li>
+<li><a class="reference internal" href="#reg">3.3.2 Reg 型</a></li>
+<li><a class="reference internal" href="#memory">3.3.3 Memory型</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">3.4运算符</a><ul>
+<li><a class="reference internal" href="#id5">3.4.1 算术运算符</a></li>
+<li><a class="reference internal" href="#id6">3.4.2赋值运算符</a></li>
+<li><a class="reference internal" href="#id7">3.4.3 关系运算符</a></li>
+<li><a class="reference internal" href="#id8">3.4.4 逻辑运算符</a></li>
+<li><a class="reference internal" href="#id9">3.4.5 条件运算符</a></li>
+<li><a class="reference internal" href="#id10">3.4.6 位运算符</a></li>
+<li><a class="reference internal" href="#id11">3.4.7 移位运算符</a></li>
+<li><a class="reference internal" href="#id12">3.4.8 拼接运算符</a></li>
+<li><a class="reference internal" href="#id13">3.4.9 优先级别</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id14">3.5组合逻辑</a><ul>
+<li><a class="reference internal" href="#id15">3.5.1 与门</a></li>
+<li><a class="reference internal" href="#id16">3.5.2 或门</a></li>
+<li><a class="reference internal" href="#id17">3.5.3 非门</a></li>
+<li><a class="reference internal" href="#id18">3.5.4 异或</a></li>
+<li><a class="reference internal" href="#id19">3.5.5比较器</a></li>
+<li><a class="reference internal" href="#id20">3.5.6 半加器</a></li>
+<li><a class="reference internal" href="#id21">3.5.7 全加器</a></li>
+<li><a class="reference internal" href="#id22">3.5.8乘法器</a></li>
+<li><a class="reference internal" href="#id23">3.5.9 数据选择器</a></li>
+<li><a class="reference internal" href="#id24">3.5.10 3-8译码器</a></li>
+<li><a class="reference internal" href="#id25">3.5.11 三态门</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id26">3.6时序逻辑</a><ul>
+<li><a class="reference internal" href="#d">3.6.1 D触发器</a></li>
+<li><a class="reference internal" href="#id27">3.6.2 两级D触发器</a></li>
+<li><a class="reference internal" href="#id28">3.6.3 带异步复位的D触发器</a></li>
+<li><a class="reference internal" href="#id29">3.6.4 带异步复位同步清零的D触发器</a></li>
+<li><a class="reference internal" href="#id30">3.6.5 移位寄存器</a></li>
+<li><a class="reference internal" href="#ram">3.6.6 单口RAM</a></li>
+<li><a class="reference internal" href="#id31">3.6.7 伪双口RAM</a></li>
+<li><a class="reference internal" href="#rom">3.6.9 单口ROM</a></li>
+<li><a class="reference internal" href="#id32">3.6.10 有限状态机</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id33">3.7总结</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="Hardware_introduction.html"
+                          title="上一章">《第二章》开发板硬件介绍</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="pl_led.html"
+                          title="下一章">《第四章》PL的“Hello world”LED 实验</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/verilog_base.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="pl_led.html" title="《第四章》PL的“Hello world”LED 实验"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="Hardware_introduction.html" title="《第二章》开发板硬件介绍"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">《第三章》Verilog 基础模块介绍</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2023, ALINX       http://www.alinx.com.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3创建。
+    </div>
+  </body>
+</html>

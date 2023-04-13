@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>《第十一章》UART 实验 &#8212; ZYNQ MPSoC开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="《第十二章》RS485 实验" href="rs485.html" />
+    <link rel="prev" title="《第十章》PWM 呼吸灯实验" href="pwm.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="rs485.html" title="《第十二章》RS485 实验"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="pwm.html" title="《第十章》PWM 呼吸灯实验"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">《第十一章》UART 实验</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <img alt="../_images/88.png" src="../_images/88.png" />
+<section id="uart">
+<h1>《第十一章》UART 实验<a class="headerlink" href="#uart" title="此标题的永久链接">¶</a></h1>
+<p>实验Vivado工程为“rs232_test”。</p>
+<p>本章利用开发板上PL端的UART接口电路实现UART数据传输。</p>
+<section id="id1">
+<h2>11.1 程序设计<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h2>
+<p>本文所述的串口指异步串行通信,异步串行是指UART(Universal Asynchronous Receiver/Transmitter),通用异步接收/发送。本实验程序设计为每秒钟向串口发送” HELLO ALINX”,如果收到RXD接收的数据,再把接收的数据发送出去,实现回环的功能。</p>
+<img alt="../_images/image140.png" class="align-center" src="../_images/image140.png" />
+<section id="id2">
+<h3>11.1.1 异步串口通信协议<a class="headerlink" href="#id2" title="此标题的永久链接">¶</a></h3>
+<p>消息帧从一个低位起始位开始,后面是7个或8个数据位,一个可用的奇偶位和一个或几个高位停止位。接收器发现开始位时它就知道数据准备发送,并尝试与发送器时钟频率同步。如果选择了奇偶校验,UART就在数据位后面加上奇偶位。奇偶位可用来帮助错误校验。在接收过程中,UART从消息帧中去掉起始位和结束位,对进来的字节进行奇偶校验,并将数据字节从串行转换成并行。UART 传输时序如下图所示:</p>
+<img alt="../_images/image225.png" class="align-center" src="../_images/image225.png" />
+<p>从波形上可以看出起始位是低电平,停止位和空闲位都是高电平,也就是说没有数据传输时是高电平,利用这个特点我们可以准确接收数据,当一个下降沿事件发生时,我们认为将进行一次数据传输。</p>
+</section>
+<section id="id3">
+<h3>11.1.2波特率<a class="headerlink" href="#id3" title="此标题的永久链接">¶</a></h3>
+<p>常见的串口通信波特率有2400 、9600、115200等,发送和接收波特率必须保持一致才能正确通信。波特率是指1秒最大传输的数据位数,包括起始位、数据位、校验位、停止位。假如通信波特率设定为9600,那么一个数据位的时间长度是1/9600秒,本实验中的波特率由50MHz时钟产生。</p>
+</section>
+<section id="id4">
+<h3>11.1.3 接收模块设计<a class="headerlink" href="#id4" title="此标题的永久链接">¶</a></h3>
+<p>串口接收模块uart_rx是个参数化可配置模块,参数“CLK_FRE”定义接收模块的系统时钟频率,单位是Mhz,参数“BAUD_RATE”是波特率。接收状态机状态转换图如下:</p>
+<img alt="../_images/image318.png" class="align-center" src="../_images/image318.png" />
+<p>“S_IDLE”状态为空闲状态,上电后进入“S_IDLE”,如果信号“rx_pin”有下降沿,我们认为是串口的起始位,进入状态“S_START”,等一个BIT时间起始位结束后进入数据位接收状态“S_REC_BYTE”,本实验中数据位设计是8位,接收完成以后进入“S_STOP”状态,在“S_STOP”没有等待一个BIT周期, <strong>只等待了半个BIT时间</strong>,这是因为如果等待了一个周期,有可能会错过下一个数据的起始位判断,最后进入“S_DATA”状态,将接收到的数据送到其他模块。在这个模块我们提一点:为了满足采样定理,在接受数据时每个数据都在波特率计数器的时间中点进行采样,以避免数据出错的情况:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">receive</span> <span class="n">serial</span> <span class="n">data</span> <span class="n">bit</span> <span class="n">data</span>
+<span class="n">always</span><span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span> <span class="ow">or</span> <span class="n">negedge</span> <span class="n">rst_n</span><span class="p">)</span>
+<span class="n">begin</span>
+       <span class="k">if</span><span class="p">(</span><span class="n">rst_n</span> <span class="o">==</span> <span class="mi">1</span><span class="s1">&#39;b0)</span>
+               <span class="n">rx_bits</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="s1">&#39;d0;</span>
+       <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="n">S_REC_BYTE</span> <span class="o">&amp;&amp;</span> <span class="n">cycle_cnt</span> <span class="o">==</span> <span class="n">CYCLE</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+               <span class="n">rx_bits</span><span class="p">[</span><span class="n">bit_cnt</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">rx_pin</span><span class="p">;</span>
+       <span class="k">else</span>
+               <span class="n">rx_bits</span> <span class="o">&lt;=</span> <span class="n">rx_bits</span><span class="p">;</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+<p><strong>注意:本实验没有设计奇偶校验位。</strong></p>
+<p>信号名称    方向      宽度(bit) 说明
+clk     in      1       系统时钟
+rst_n   in      1       异步复位,低电平复位
+rx_data out     8       接收到的串口数据(8位数据)
+rx_data_valid   out     1       接收到的串口数据有效(高有效)
+rx_data_ready   in      1       表示用户可以从接收模块接收数据,当rx_data_ready和rx_data_valid都为高时数据送出
+rx_pin  in      1       串口接收数据输入
+串口接收模块uart_rx端口</p>
+</section>
+<section id="id5">
+<h3>11.1.4 发送模块设计<a class="headerlink" href="#id5" title="此标题的永久链接">¶</a></h3>
+<p>发送模块uart_tx设计和接收模块相似,也是使用状态机,状态转换图如下:</p>
+<img alt="../_images/image414.png" class="align-center" src="../_images/image414.png" />
+<p>上电后进入“S_IDLE”空闲状态,如果有发送请求,进入发送起始位状态“S_START”,起始位发送完成后进入发送数据位状态“S_SEND_BYTE”,数据位发送完成后进入发送停止位状态“S_STOP”,停止位发送完成后又进入空闲状态。在数据发送模块中,从顶层模块写入的数据直接传递给寄存器‘tx_reg’,并通过‘tx_reg’寄存器模拟串口传输协议在状态机的条件转换下进行数据传送:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">always</span><span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk</span> <span class="ow">or</span> <span class="n">negedge</span> <span class="n">rst_n</span><span class="p">)</span>
+<span class="n">begin</span>
+       <span class="k">if</span><span class="p">(</span><span class="n">rst_n</span> <span class="o">==</span> <span class="mi">1</span><span class="s1">&#39;b0)</span>
+               <span class="n">tx_reg</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="s1">&#39;b1;</span>
+       <span class="k">else</span>
+               <span class="k">case</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+                       <span class="n">S_IDLE</span><span class="p">,</span><span class="n">S_STOP</span><span class="p">:</span>
+                               <span class="n">tx_reg</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="s1">&#39;b1;</span>
+                       <span class="n">S_START</span><span class="p">:</span>
+                               <span class="n">tx_reg</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="s1">&#39;b0;</span>
+                       <span class="n">S_SEND_BYTE</span><span class="p">:</span>
+                               <span class="n">tx_reg</span> <span class="o">&lt;=</span> <span class="n">tx_data_latch</span><span class="p">[</span><span class="n">bit_cnt</span><span class="p">];</span>
+                       <span class="n">default</span><span class="p">:</span>
+                               <span class="n">tx_reg</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="s1">&#39;b1;</span>
+               <span class="n">endcase</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+<p>串口发送模块uart_tx端口</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>信号名称</p></th>
+<th class="head"><p>方向</p></th>
+<th class="head"><p>宽度(bit)</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>clk</p></td>
+<td><p>in</p></td>
+<td><p>1</p></td>
+<td><p>系统时钟</p></td>
+</tr>
+<tr class="row-odd"><td><p>rst_n</p></td>
+<td><p>in</p></td>
+<td><p>1</p></td>
+<td><p>异步复位,低电平复位</p></td>
+</tr>
+<tr class="row-even"><td><p>tx_data</p></td>
+<td><p>in</p></td>
+<td><p>8</p></td>
+<td><p>要发送的串口数据(8位数据)</p></td>
+</tr>
+<tr class="row-odd"><td><p>tx_data_valid</p></td>
+<td><p>in</p></td>
+<td><p>1</p></td>
+<td><p>发送的串口数据有效(高有效)</p></td>
+</tr>
+<tr class="row-even"><td><p>tx_data_ready</p></td>
+<td><p>out</p></td>
+<td><p>1</p></td>
+<td><p>发送模块已准备好发送数据,用户可将tx_data_valid信号拉高发送数据给发送模块。当tx_data_ready和tx_data_valid都为高时数据被发送</p></td>
+</tr>
+<tr class="row-odd"><td><p>tx_pin</p></td>
+<td><p>out</p></td>
+<td><p>1</p></td>
+<td><p>串口发送数据发送</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h3>11.1.5 波特率的产生<a class="headerlink" href="#id6" title="此标题的永久链接">¶</a></h3>
+<p>在发送和接收模块中,声明了参数CYCLE,也就是UART一个周期的计数值,当然计数是在50MHz时钟下进行的。用户只要设定好CLK_FRE和BAUD_RATE这两个参数即可。</p>
+<img alt="../_images/image514.png" class="align-center" src="../_images/image514.png" />
+</section>
+<section id="id7">
+<h3>11.1.6 测试程序<a class="headerlink" href="#id7" title="此标题的永久链接">¶</a></h3>
+<p>测试程序设计FPGA为1秒向串口发送一次“HELLO ALINXrn”,不发送期间,如果接受到串口数据,直接把接收到的数据送到发送模块再返回。“rn”,在这里和C语言中表示一致,都是回车换行。
+测试程序分别例化了发送模块和接收模块,同时将参数传递进去,波特率设置为115200。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">always</span><span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">sys_clk</span> <span class="ow">or</span> <span class="n">negedge</span> <span class="n">rst_n</span><span class="p">)</span>
+<span class="n">begin</span>
+       <span class="k">if</span><span class="p">(</span><span class="n">rst_n</span> <span class="o">==</span> <span class="mi">1</span><span class="s1">&#39;b0)</span>
+       <span class="n">begin</span>
+               <span class="n">wait_cnt</span> <span class="o">&lt;=</span> <span class="mi">32</span><span class="s1">&#39;d0;</span>
+               <span class="n">tx_data</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="s1">&#39;d0;</span>
+               <span class="n">state</span> <span class="o">&lt;=</span> <span class="n">IDLE</span><span class="p">;</span>
+               <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="s1">&#39;d0;</span>
+               <span class="n">tx_data_valid</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="s1">&#39;b0;</span>
+       <span class="n">end</span>
+       <span class="k">else</span>
+       <span class="k">case</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+               <span class="n">IDLE</span><span class="p">:</span>
+                       <span class="n">state</span> <span class="o">&lt;=</span> <span class="n">SEND</span><span class="p">;</span>
+               <span class="n">SEND</span><span class="p">:</span>
+               <span class="n">begin</span>
+                       <span class="n">wait_cnt</span> <span class="o">&lt;=</span> <span class="mi">32</span><span class="s1">&#39;d0;</span>
+                       <span class="n">tx_data</span> <span class="o">&lt;=</span> <span class="n">tx_str</span><span class="p">;</span>
+
+                       <span class="k">if</span><span class="p">(</span><span class="n">tx_data_valid</span> <span class="o">==</span> <span class="mi">1</span><span class="s1">&#39;b1 &amp;&amp; tx_data_ready == 1&#39;</span><span class="n">b1</span> <span class="o">&amp;&amp;</span> <span class="n">tx_cnt</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="s1">&#39;d12)//Send 12 bytes data</span>
+                       <span class="n">begin</span>
+                               <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="n">tx_cnt</span> <span class="o">+</span> <span class="mi">8</span><span class="s1">&#39;d1; //Send data counter</span>
+                       <span class="n">end</span>
+                       <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">tx_data_valid</span> <span class="o">&amp;&amp;</span> <span class="n">tx_data_ready</span><span class="p">)</span><span class="o">//</span><span class="n">last</span> <span class="n">byte</span> <span class="n">sent</span> <span class="ow">is</span> <span class="n">complete</span>
+                       <span class="n">begin</span>
+                               <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="s1">&#39;d0;</span>
+                               <span class="n">tx_data_valid</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="s1">&#39;b0;</span>
+                               <span class="n">state</span> <span class="o">&lt;=</span> <span class="n">WAIT</span><span class="p">;</span>
+                       <span class="n">end</span>
+                       <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="o">~</span><span class="n">tx_data_valid</span><span class="p">)</span>
+                       <span class="n">begin</span>
+                               <span class="n">tx_data_valid</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="s1">&#39;b1;</span>
+                       <span class="n">end</span>
+               <span class="n">end</span>
+               <span class="n">WAIT</span><span class="p">:</span>
+               <span class="n">begin</span>
+                       <span class="n">wait_cnt</span> <span class="o">&lt;=</span> <span class="n">wait_cnt</span> <span class="o">+</span> <span class="mi">32</span><span class="s1">&#39;d1;</span>
+
+                       <span class="k">if</span><span class="p">(</span><span class="n">rx_data_valid</span> <span class="o">==</span> <span class="mi">1</span><span class="s1">&#39;b1)</span>
+                       <span class="n">begin</span>
+                               <span class="n">tx_data_valid</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="s1">&#39;b1;</span>
+                               <span class="n">tx_data</span> <span class="o">&lt;=</span> <span class="n">rx_data</span><span class="p">;</span>   <span class="o">//</span> <span class="n">send</span> <span class="n">uart</span> <span class="n">received</span> <span class="n">data</span>
+                       <span class="n">end</span>
+                       <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">tx_data_valid</span> <span class="o">&amp;&amp;</span> <span class="n">tx_data_ready</span><span class="p">)</span>
+                       <span class="n">begin</span>
+                               <span class="n">tx_data_valid</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="s1">&#39;b0;</span>
+                       <span class="n">end</span>
+                       <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">wait_cnt</span> <span class="o">&gt;=</span> <span class="n">CLK_FRE</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">)</span> <span class="o">//</span> <span class="n">wait</span> <span class="k">for</span> <span class="mi">1</span> <span class="n">second</span>
+                               <span class="n">state</span> <span class="o">&lt;=</span> <span class="n">SEND</span><span class="p">;</span>
+               <span class="n">end</span>
+               <span class="n">default</span><span class="p">:</span>
+                       <span class="n">state</span> <span class="o">&lt;=</span> <span class="n">IDLE</span><span class="p">;</span>
+       <span class="n">endcase</span>
+<span class="n">end</span>
+
+<span class="o">//</span><span class="n">combinational</span> <span class="n">logic</span>
+<span class="o">//</span><span class="n">Send</span> <span class="s2">&quot;HELLO ALINX</span><span class="se">\r\n</span><span class="s2">&quot;</span>
+<span class="n">always</span><span class="o">@</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="n">begin</span>
+       <span class="k">case</span><span class="p">(</span><span class="n">tx_cnt</span><span class="p">)</span>
+               <span class="mi">8</span><span class="s1">&#39;d0 :  tx_str &lt;= &quot;H&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d1 :  tx_str &lt;= &quot;E&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d2 :  tx_str &lt;= &quot;L&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d3 :  tx_str &lt;= &quot;L&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d4 :  tx_str &lt;= &quot;O&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d5 :  tx_str &lt;= &quot; &quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d6 :  tx_str &lt;= &quot;A&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d7 :  tx_str &lt;= &quot;L&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d8 :  tx_str &lt;= &quot;I&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d9 :  tx_str &lt;= &quot;N&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d10:  tx_str &lt;= &quot;X&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d11:  tx_str &lt;= &quot;</span><span class="se">\r</span><span class="s1">&quot;;</span>
+               <span class="mi">8</span><span class="s1">&#39;d12:  tx_str &lt;= &quot;</span><span class="se">\n</span><span class="s1">&quot;;</span>
+               <span class="n">default</span><span class="p">:</span><span class="n">tx_str</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="s1">&#39;d0;</span>
+       <span class="n">endcase</span>
+<span class="n">end</span>
+<span class="n">uart_rx</span><span class="c1">#</span>
+<span class="p">(</span>
+    <span class="o">.</span><span class="n">CLK_FRE</span><span class="p">(</span><span class="n">CLK_FRE</span><span class="p">),</span>
+    <span class="o">.</span><span class="n">BAUD_RATE</span><span class="p">(</span><span class="mi">115200</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">uart_rx_inst</span>
+<span class="p">(</span>
+    <span class="o">.</span><span class="n">clk</span>                        <span class="p">(</span><span class="n">sys_clk</span>                  <span class="p">),</span>
+    <span class="o">.</span><span class="n">rst_n</span>                      <span class="p">(</span><span class="n">rst_n</span>                    <span class="p">),</span>
+    <span class="o">.</span><span class="n">rx_data</span>                    <span class="p">(</span><span class="n">rx_data</span>                  <span class="p">),</span>
+    <span class="o">.</span><span class="n">rx_data_valid</span>              <span class="p">(</span><span class="n">rx_data_valid</span>            <span class="p">),</span>
+    <span class="o">.</span><span class="n">rx_data_ready</span>              <span class="p">(</span><span class="n">rx_data_ready</span>            <span class="p">),</span>
+    <span class="o">.</span><span class="n">rx_pin</span>                     <span class="p">(</span><span class="n">uart_rx</span>                  <span class="p">)</span>
+<span class="p">);</span>
+
+<span class="n">uart_tx</span><span class="c1">#</span>
+<span class="p">(</span>
+    <span class="o">.</span><span class="n">CLK_FRE</span><span class="p">(</span><span class="n">CLK_FRE</span><span class="p">),</span>
+    <span class="o">.</span><span class="n">BAUD_RATE</span><span class="p">(</span><span class="mi">115200</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">uart_tx_inst</span>
+<span class="p">(</span>
+    <span class="o">.</span><span class="n">clk</span>                        <span class="p">(</span><span class="n">sys_clk</span>                  <span class="p">),</span>
+    <span class="o">.</span><span class="n">rst_n</span>                      <span class="p">(</span><span class="n">rst_n</span>                    <span class="p">),</span>
+    <span class="o">.</span><span class="n">tx_data</span>                    <span class="p">(</span><span class="n">tx_data</span>                  <span class="p">),</span>
+    <span class="o">.</span><span class="n">tx_data_valid</span>              <span class="p">(</span><span class="n">tx_data_valid</span>            <span class="p">),</span>
+    <span class="o">.</span><span class="n">tx_data_ready</span>              <span class="p">(</span><span class="n">tx_data_ready</span>            <span class="p">),</span>
+    <span class="o">.</span><span class="n">tx_pin</span>                     <span class="p">(</span><span class="n">uart_tx</span>                  <span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2>11.2仿真<a class="headerlink" href="#id8" title="此标题的永久链接">¶</a></h2>
+<p>这里我们添加了一个串口接收的激励程序vtf_uart_test.v文件,用来仿真uart串口接收。这里向串口模块的uart_rx发送0xa3的数据, 每位的数据按115200的波特率发送,1位起始位,8位数据位和1位停止位。</p>
+<img alt="../_images/image614.png" class="align-center" src="../_images/image614.png" />
+<p>仿真的结果如下,当程序接收到8位数据的时候,rx_data_valid有效,rx_data[7:0]的数据位a3。</p>
+<img alt="../_images/image713.png" class="align-center" src="../_images/image713.png" />
+</section>
+<section id="id9">
+<h2>11.3实验测试<a class="headerlink" href="#id9" title="此标题的永久链接">¶</a></h2>
+<p>通过USB连接PL_UART接口到电脑上</p>
+<img alt="../_images/image811.png" class="align-center" src="../_images/image811.png" />
+<p>在设备管理器中找到串口号”COM5”</p>
+<img alt="../_images/image911.png" class="align-center" src="../_images/image911.png" />
+<p>打开串口调试,端口选择“COM79”(根据自己情况选择),波特率设置115200,检验位选None,数据位选8,停止位选1,然后点击“打开串口”。此软件在例程文件夹下。</p>
+<img alt="../_images/image109.png" class="align-center" src="../_images/image109.png" />
+<p>打开串口以后,每秒可收到“HELLO ALINX”,在发送区输入框输入要发送的文字,点击“手动发送”,可以看到接收到自己发送的字符。</p>
+<img alt="../_images/image1114.png" class="align-center" src="../_images/image1114.png" />
+<img alt="../_images/888.png" src="../_images/888.png" />
+<p><em>ZYNQ MPSoC开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">《第十一章》UART 实验</a><ul>
+<li><a class="reference internal" href="#id1">11.1 程序设计</a><ul>
+<li><a class="reference internal" href="#id2">11.1.1 异步串口通信协议</a></li>
+<li><a class="reference internal" href="#id3">11.1.2波特率</a></li>
+<li><a class="reference internal" href="#id4">11.1.3 接收模块设计</a></li>
+<li><a class="reference internal" href="#id5">11.1.4 发送模块设计</a></li>
+<li><a class="reference internal" href="#id6">11.1.5 波特率的产生</a></li>
+<li><a class="reference internal" href="#id7">11.1.6 测试程序</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8">11.2仿真</a></li>
+<li><a class="reference internal" href="#id9">11.3实验测试</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="pwm.html"
+                          title="上一章">《第十章》PWM 呼吸灯实验</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="rs485.html"
+                          title="下一章">《第十二章》RS485 实验</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/uart.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="rs485.html" title="《第十二章》RS485 实验"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="pwm.html" title="《第十章》PWM 呼吸灯实验"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">《第十一章》UART 实验</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2023, ALINX       http://www.alinx.com.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3创建。
+    </div>
+  </body>
+</html>

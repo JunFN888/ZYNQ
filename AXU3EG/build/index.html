@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>ALINX ZYNQ MPSoC 开发平台 FPGA 教程 &#8212; ZYNQ MPSoC开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/groundwork.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="关于ALINX" href="src/about_alinx.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="src/about_alinx.html" title="关于ALINX"
+             accesskey="N">下一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ALINX ZYNQ MPSoC 开发平台 FPGA 教程</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="alinx-zynq-mpsoc-fpga">
+<h1><a class="reference external" href="http://www.alinx.com">ALINX</a> ZYNQ MPSoC 开发平台 FPGA 教程<a class="headerlink" href="#alinx-zynq-mpsoc-fpga" title="此标题的永久链接">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">公司简介</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src/about_alinx.html">关于ALINX</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/about_alinx.html#id1">联系方式</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">AXU3EG型号板卡教程</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src/introduction.html">引文</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/Ultrascale_MPSoC.html">《第一章》Ultrascale+ MPSoC 介绍</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/Ultrascale_MPSoC.html#pspl">1.1PS和PL互联技术</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Ultrascale_MPSoC.html#zynq">1.2ZYNQ芯片开发流程的简介</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Ultrascale_MPSoC.html#id1">1.3学习ZYNQ要具备哪些技能</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/Hardware_introduction.html">《第二章》开发板硬件介绍</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#acu3eg">2.1 ACU3EG核心板</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#psddr4-sdram">PS端DDR4 SDRAM引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#plddr4-sdram">PL端DDR4 SDRAM引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id3">QSPI FLASH配置芯片引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id4">eMMC FLASH配置芯片引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#rtc">RTC时钟引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#ps">PS时钟引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#pl">PL时钟引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#j29">J29连接器的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#j30">J30连接器的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#j31">J31连接器的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#j32">J32连接器的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id9">2.2扩展板</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#m-2zynq">M.2接口ZYNQ引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#displayportzynq">DisplayPort接口ZYNQ引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#usb">USB接口引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id12">千兆以太网引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#usbzynq">USB转串口的ZYNQ引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id13">SD卡槽引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#j45zynq">J45扩展口ZYNQ的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#j46zynq">J46扩展口ZYNQ的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id15">CAN通信引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#rs485">RS485通信引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id17">MIPI接口引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id19">EEPROM通信引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id21">用户LED灯的引脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id23">按键的ZYNQ管脚分配</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/Hardware_introduction.html#id26">各个电源分配的功能</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/verilog_base.html">《第三章》Verilog 基础模块介绍</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/verilog_base.html#id1">3.1简介</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/verilog_base.html#id2">3.2数据类型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/verilog_base.html#id3">3.3变量</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/verilog_base.html#id4">3.4运算符</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/verilog_base.html#id14">3.5组合逻辑</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/verilog_base.html#id26">3.6时序逻辑</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/verilog_base.html#id33">3.7总结</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/pl_led.html">《第四章》PL的“Hello world”LED 实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#led">4.1 LED硬件介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#vivado">4.2 创建vivado工程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#verilog-hdlled">4.3 创建Verilog HDL文件点亮LED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#id1">4.4 添加管脚约束</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#id2">4.5 添加时序约束</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#bit">4.6 生成BIT文件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#id3">4.7 Vivado仿真</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#id4">4.8 下载</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#id5">4.9 在线调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_led.html#id6">4.10 实验总结</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/pll.html">《第五章》Vivado 下 PLL 实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/pll.html#id1">5.1 实验原理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pll.html#vivado">5.2 创建Vivado工程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pll.html#id2">5.3 仿真</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pll.html#id3">5.4 板上验证</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/ram.html">《第六章》FPGA 片内 RAM 测试实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/ram.html#id1">6.1实验原理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ram.html#vivado">6.2创建Vivado工程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ram.html#ram">6.3RAM的端口定义和时序</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ram.html#id2">6.5仿真</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ram.html#id3">6.6板上验证</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/rom.html">《第七章》FPGA 片内 ROM 测试实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/rom.html#id1">7.1实验原理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/rom.html#id2">7.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/rom.html#id3">7.3ROM测试程序编写</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/rom.html#id4">7.4仿真</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/rom.html#id5">7.5板上验证</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/fifo.html">《第八章》FPGA 片内 FIFO 读写测试实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/fifo.html#id1">8.1实验原理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/fifo.html#vivado">8.2创建Vivado工程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/fifo.html#id2">8.3FIFO测试程序编写</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/fifo.html#id3">8.4仿真</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/fifo.html#id4">8.5板上验证</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/key.html">《第九章》Vivado 下按键实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/key.html#id1">9.1按键硬件电路</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/key.html#id2">9.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/key.html#id3">9.3创建Vivado工程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/key.html#id4">9.4板上验证</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/pwm.html">《第十章》PWM 呼吸灯实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/pwm.html#id1">10.1实验原理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pwm.html#id2">10.2实验设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pwm.html#id3">10.3下载验证</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/uart.html">《第十一章》UART 实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/uart.html#id1">11.1 程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/uart.html#id8">11.2仿真</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/uart.html#id9">11.3实验测试</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/rs485.html">《第十二章》RS485 实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/rs485.html#id1">12.1实验原理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/rs485.html#id2">12.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/rs485.html#id3">12.3实验测试</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/pl_ddr4.html">《第十三章》PL 端 DDR4 读写测试实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_ddr4.html#id1">13.1硬件介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_ddr4.html#vivado">13.2Vivado工程建立</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_ddr4.html#id3">13.3下载调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/pl_ddr4.html#id4">13.4实验总结</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/hdmi_out.html">《第十四章》HDMI 输出实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/hdmi_out.html#id1">14.1硬件介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/hdmi_out.html#id2">14.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/hdmi_out.html#xdc">14.3添加XDC约束文件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/hdmi_out.html#id3">14.4下载调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/hdmi_out.html#id4">14.5实验总结</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/hdmi_char.html">《第十五章》HDMI 字符显示实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/hdmi_char.html#id1">15.1实验原理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/hdmi_char.html#id2">15.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/hdmi_char.html#id3">15.3实验现象</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/7lcd.html">《第十六章》7 寸液晶屏显示实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/7lcd.html#id2">16.1硬件介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/7lcd.html#id3">16.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/7lcd.html#id4">16.3实验现象</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/ad7606.html">《第十七章》AD7606 多通道波形显示实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/ad7606.html#id1">17.1实验原理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ad7606.html#id4">17.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ad7606.html#id5">17.3实验现象</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/ad9238_d.html">《第十八章》AD9238 双通道波形显示实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/ad9238_d.html#id1">18.1硬件介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ad9238_d.html#id3">18.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ad9238_d.html#id4">18.3实验现象</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/adda.html">《第十九章》ADDA 测试实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/adda.html#id1">19.1硬件介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/adda.html#id2">19.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/adda.html#id3">19.3实验现象</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/ad9767_d.html">《第二十章》AD9767 双通道正弦波产生实验</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/ad9767_d.html#id1">20.1硬件介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ad9767_d.html#id5">20.2程序设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/ad9767_d.html#id7">20.3实验现象</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">AXU3EG常见问题</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src/problem.html">PROBLEM</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Alinx版权</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src/IP.html">版权说明</a></li>
+</ul>
+</div>
+</section>
+<section id="alinx-serve">
+<h1>Alinx serve<a class="headerlink" href="#alinx-serve" title="此标题的永久链接">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">索引</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">模块索引</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">搜索页面</span></a></p></li>
+</ul>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="#">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">ALINX ZYNQ MPSoC 开发平台 FPGA 教程</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#alinx-serve">Alinx serve</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="src/about_alinx.html"
+                          title="下一章">关于ALINX</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="src/about_alinx.html" title="关于ALINX"
+             >下一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ALINX ZYNQ MPSoC 开发平台 FPGA 教程</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2023, ALINX       http://www.alinx.com.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3创建。
+    </div>
+  </body>
+</html>

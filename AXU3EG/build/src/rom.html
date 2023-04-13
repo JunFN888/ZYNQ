@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>《第七章》FPGA 片内 ROM 测试实验 &#8212; ZYNQ MPSoC开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="《第八章》FPGA 片内 FIFO 读写测试实验" href="fifo.html" />
+    <link rel="prev" title="《第六章》FPGA 片内 RAM 测试实验" href="ram.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="fifo.html" title="《第八章》FPGA 片内 FIFO 读写测试实验"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="ram.html" title="《第六章》FPGA 片内 RAM 测试实验"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">《第七章》FPGA 片内 ROM 测试实验</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <img alt="../_images/88.png" src="../_images/88.png" />
+<section id="fpga-rom">
+<h1>《第七章》FPGA 片内 ROM 测试实验<a class="headerlink" href="#fpga-rom" title="此标题的永久链接">¶</a></h1>
+<p><strong>实验Vivado工程为“rom_test”。</strong></p>
+<p>FPGA本身是SRAM架构的,断电之后,程序就消失,那么如何利用FPGA实现一个ROM呢,我们可以利用FPGA内部的RAM资源实现ROM,但不是真正意义上的ROM,而是每次上电都会把初始化的值先写入RAM。本实验将为大家介绍如何使用FPGA内部的ROM以及程序对该ROM的数据读操作。</p>
+<section id="id1">
+<h2>7.1实验原理<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h2>
+<p>Xilinx在VIVADO里为我们已经提供了ROM的IP核, 我们只需通过IP核例化一个ROM,根据ROM的读时序来读取ROM中存储的数据。实验中会通过VIVADO集成的在线逻辑分析仪ila,我们可以观察ROM的读时序和从ROM中读取的数据。</p>
+</section>
+<section id="id2">
+<h2>7.2程序设计<a class="headerlink" href="#id2" title="此标题的永久链接">¶</a></h2>
+<section id="rom">
+<h3>7.2.1创建ROM初始化文件<a class="headerlink" href="#rom" title="此标题的永久链接">¶</a></h3>
+<p>既然是ROM,那么我们就必须提前给它准备好数据,然后在FPGA实际运行时,我们直接读取这些ROM中预存储好的数据就行。Xilinx FPGA的片内ROM支持初始化数据配置。如下图所示,我们可以创建一个名为rom_init.coe的文件,注意后缀一定是“.coe”,前面的名称当然可以随意起。</p>
+<img alt="../_images/image138.png" class="align-center" src="../_images/image138.png" />
+<p>ROM初始化文件的内容格式很简单, 如下图所示。第一行为定义数据格式, 16代表ROM的数据格式为16进制。从第3行开始到第34行,是这个32*8bit大小ROM的初始化数据。每行数字后面用逗号,最后一行数字结束用分号。</p>
+<img alt="../_images/image223.png" class="align-center" src="../_images/image223.png" />
+<p>rom_init.coe编写完成后保存一下, 接下去我们开始设计和配置ROM IP核。</p>
+</section>
+<section id="rom-ip">
+<h3>7.2.2添加ROM IP核<a class="headerlink" href="#rom-ip" title="此标题的永久链接">¶</a></h3>
+<p>在添加ROM IP之前先新建一个rom_test的工程, 然后在工程中添加ROM IP,方法如下:
+1) 点击下图中IP Catalog,在右侧弹出的界面中搜索rom,找到Block Memory Generator,双击打开。</p>
+<img alt="../_images/image316.png" class="align-center" src="../_images/image316.png" />
+<ol class="arabic simple" start="2">
+<li><p>将Component Name改为rom_ip,在Basic栏目下,将Memory Type改为Single Prot ROM。</p></li>
+</ol>
+<img alt="../_images/image412.png" class="align-center" src="../_images/image412.png" />
+<ol class="arabic simple" start="3">
+<li><p>切换到Port A Options栏目下,将ROM位宽Port A Width改为8,将ROM深度Port A Depth改为32,使能管脚Enable Port Type改为Always,并取消Primitives Output Register</p></li>
+</ol>
+<img alt="../_images/image512.png" class="align-center" src="../_images/image512.png" />
+<ol class="arabic simple" start="4">
+<li><p>Options栏目下,勾选Load Init File,点击Browse,选中之前制作好的.coe文件。</p></li>
+</ol>
+<img alt="../_images/image612.png" class="align-center" src="../_images/image612.png" />
+<ol class="arabic simple" start="5">
+<li><p>点击ok,点击Generate生成ip核。</p></li>
+</ol>
+<img alt="../_images/image711.png" class="align-center" src="../_images/image711.png" />
+</section>
+</section>
+<section id="id3">
+<h2>7.3ROM测试程序编写<a class="headerlink" href="#id3" title="此标题的永久链接">¶</a></h2>
+<p>ROM的程序设计非常简单, 在程序中我们只要每个时钟改变ROM的地址, ROM就会输出当前地址的内部存储数据,例化ila,用于观察地址和数据的变化。ROM IP的实例化及程序设计如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`timescale 1ns / 1ps
+
+module rom_test(
+       input      sys_clk_p,            //system clock 200Mhz postive pin
+    input      sys_clk_n,            //system clock 200Mhz negetive pin
+       input rst_n             //复位,低电平有效
+    );
+
+wire [7:0] rom_data;     //ROM读出数据
+reg     [4:0] rom_addr;      //ROM输入地址
+
+wire sys_clk ;
+
+IBUFDS IBUFDS_inst (
+   .O(sys_clk),  // Buffer output
+   .I(sys_clk_p),  // Diff_p buffer input (connect directly to top-level port)
+   .IB(sys_clk_n) // Diff_n buffer input (connect directly to top-level port)
+);
+
+//产生ROM地址读取数据
+always @ (posedge sys_clk or negedge rst_n)
+begin
+    if(!rst_n)
+        rom_addr &lt;= 10&#39;d0;
+    else
+        rom_addr &lt;= rom_addr+1&#39;b1;
+end
+//实例化ROM
+rom_ip rom_ip_inst
+(
+    .clka   (sys_clk    ),      //inoput clka
+    .addra  (rom_addr   ),      //input [4:0] addra
+    .douta  (rom_data   )       //output [7:0] douta
+);
+//实例化逻辑分析仪
+ila_0 ila_m0
+(
+    .clk    (sys_clk),
+    .probe0 (rom_addr),
+       .probe1 (rom_data)
+);
+
+endmodule
+</pre></div>
+</div>
+<p>绑定引脚</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##################Compress Bitstream############################</span>
+<span class="n">set_property</span> <span class="n">BITSTREAM</span><span class="o">.</span><span class="n">GENERAL</span><span class="o">.</span><span class="n">COMPRESS</span> <span class="n">TRUE</span> <span class="p">[</span><span class="n">current_design</span><span class="p">]</span>
+
+<span class="n">set_property</span> <span class="n">PACKAGE_PIN</span> <span class="n">AE5</span> <span class="p">[</span><span class="n">get_ports</span> <span class="n">sys_clk_p</span><span class="p">]</span>
+<span class="n">set_property</span> <span class="n">IOSTANDARD</span> <span class="n">DIFF_SSTL12</span> <span class="p">[</span><span class="n">get_ports</span> <span class="n">sys_clk_p</span><span class="p">]</span>
+
+<span class="n">create_clock</span> <span class="o">-</span><span class="n">period</span> <span class="mf">5.000</span> <span class="o">-</span><span class="n">name</span> <span class="n">sys_clk_p</span> <span class="o">-</span><span class="n">waveform</span> <span class="p">{</span><span class="mf">0.000</span> <span class="mf">2.500</span><span class="p">}</span> <span class="p">[</span><span class="n">get_ports</span> <span class="n">sys_clk_p</span><span class="p">]</span>
+
+
+<span class="n">set_property</span> <span class="n">PACKAGE_PIN</span> <span class="n">AF12</span> <span class="p">[</span><span class="n">get_ports</span> <span class="n">rst_n</span><span class="p">]</span>
+<span class="n">set_property</span> <span class="n">IOSTANDARD</span> <span class="n">LVCMOS33</span> <span class="p">[</span><span class="n">get_ports</span> <span class="n">rst_n</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>7.4仿真<a class="headerlink" href="#id4" title="此标题的永久链接">¶</a></h2>
+<p>仿真结果如下,符合预期,与RAM的读取数据一样,数据也是滞后于地址一个周期。</p>
+<img alt="../_images/image89.png" class="align-center" src="../_images/image89.png" />
+</section>
+<section id="id5">
+<h2>7.5板上验证<a class="headerlink" href="#id5" title="此标题的永久链接">¶</a></h2>
+<p>以地址0为触发条件,可以看到读取的数据与仿真一致。</p>
+<img alt="../_images/image99.png" class="align-center" src="../_images/image99.png" />
+<img alt="../_images/888.png" src="../_images/888.png" />
+<p><em>ZYNQ MPSoC开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">《第七章》FPGA 片内 ROM 测试实验</a><ul>
+<li><a class="reference internal" href="#id1">7.1实验原理</a></li>
+<li><a class="reference internal" href="#id2">7.2程序设计</a><ul>
+<li><a class="reference internal" href="#rom">7.2.1创建ROM初始化文件</a></li>
+<li><a class="reference internal" href="#rom-ip">7.2.2添加ROM IP核</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">7.3ROM测试程序编写</a></li>
+<li><a class="reference internal" href="#id4">7.4仿真</a></li>
+<li><a class="reference internal" href="#id5">7.5板上验证</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="ram.html"
+                          title="上一章">《第六章》FPGA 片内 RAM 测试实验</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="fifo.html"
+                          title="下一章">《第八章》FPGA 片内 FIFO 读写测试实验</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/rom.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="fifo.html" title="《第八章》FPGA 片内 FIFO 读写测试实验"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="ram.html" title="《第六章》FPGA 片内 RAM 测试实验"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ MPSoC开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">《第七章》FPGA 片内 ROM 测试实验</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2023, ALINX       http://www.alinx.com.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3创建。
+    </div>
+  </body>
+</html>
